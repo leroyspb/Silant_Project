@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой Силант</title>
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="{% static 'images/logo.png' %}" alt="Силант" height="50">
+            </div>
+            <div class="contacts">+7-8352-20-12-09, telegram</div>
+            <div class="auth">
+                {% if user.is_authenticated %}
+                    {{ user.username }} | <a href="{% url 'account_logout' %}">Выйти</a>
+                {% else %}
+                    <a href="{% url 'account_login' %}">Авторизация</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <div class="container">
+            <div>+7-8352-20-12-09, telegram</div>
+            <div>Мой Силант 2022</div>
+        </div>
+    </footer>
+</body>
+</html>

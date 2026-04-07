@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Электронная сервисная книжка "Мой Силант"</h1>
+    <p>Проверьте комплектацию и технические характеристики техники Силант</p>
+
+    <form method="get" action="{% url 'search_machine' %}">
+        <input type="text" name="factory_number" placeholder="Заводской номер" required>
+        <button type="submit">Поиск</button>
+    </form>
+</div>
+{% endblock %}

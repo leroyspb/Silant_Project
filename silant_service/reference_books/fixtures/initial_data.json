@@ -1,0 +1,17 @@
+[
+  {"model": "reference_books.techniquemodel", "pk": 1, "fields": {"название": "Силант 1.5", "описание": "Вилочный погрузчик грузоподъемностью 1.5 тонны"}},
+  {"model": "reference_books.techniquemodel", "pk": 2, "fields": {"название": "Силант 2.0", "описание": "Вилочный погрузчик грузоподъемностью 2.0 тонны"}},
+  {"model": "reference_books.enginemodel", "pk": 1, "fields": {"название": "Д-245", "описание": "Дизельный двигатель 4-цилиндровый"}},
+  {"model": "reference_books.enginemodel", "pk": 2, "fields": {"название": "Д-260", "описание": "Дизельный двигатель 6-цилиндровый"}},
+  {"model": "reference_books.transmissionmodel", "pk": 1, "fields": {"название": "МТЗ-80", "описание": "Механическая трансмиссия"}},
+  {"model": "reference_books.transmissionmodel", "pk": 2, "fields": {"название": "ZF", "описание": "Гидромеханическая трансмиссия"}},
+  {"model": "reference_books.driveaxlemodel", "pk": 1, "fields": {"название": "Ведущий мост 1", "описание": "Стандартный ведущий мост"}},
+  {"model": "reference_books.steeraxlemodel", "pk": 1, "fields": {"название": "Управляемый мост 1", "описание": "Стандартный управляемый мост"}},
+  {"model": "reference_books.failurenode", "pk": 1, "fields": {"название": "Двигатель", "описание": "Отказ двигателя"}},
+  {"model": "reference_books.failurenode", "pk": 2, "fields": {"название": "Трансмиссия", "описание": "Отказ трансмиссии"}},
+  {"model": "reference_books.repairmethod", "pk": 1, "fields": {"название": "Замена", "описание": "Полная замена узла"}},
+  {"model": "reference_books.repairmethod", "pk": 2, "fields": {"название": "Ремонт", "описание": "Ремонт с заменой деталей"}},
+  {"model": "reference_books.maintenancetype", "pk": 1, "fields": {"название": "ТО-1", "описание": "Ежедневное обслуживание"}},
+  {"model": "reference_books.maintenancetype", "pk": 2, "fields": {"название": "ТО-2", "описание": "Периодическое обслуживание"}},
+  {"model": "reference_books.servicecompany", "pk": 1, "fields": {"название": "ООО Силант-Сервис", "описание": "Официальный сервисный центр"}}
+]

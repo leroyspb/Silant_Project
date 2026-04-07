@@ -1,0 +1,74 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'PT Sans', 'PT Astra Sans', sans-serif;
+    background-color: #EBE6D6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: #163E6C;
+    color: white;
+    padding: 15px 0;
+}
+
+footer {
+    background-color: #163E6C;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: auto;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+main {
+    flex: 1;
+    padding: 30px 15px;
+}
+
+button, .btn {
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #a0080d;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    header .container {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 480px) {
+    header .container {
+        flex-direction: column;
+        text-align: center;
+    }
+}
