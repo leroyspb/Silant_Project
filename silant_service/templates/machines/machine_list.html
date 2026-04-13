@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Мои машины</h1>
+
+<table border="1" style="width:100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>Зав. №</th>
+            <th>Модель техники</th>
+            <th>Модель двигателя</th>
+            <th>Клиент</th>
+            <th>Сервисная компания</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for machine in machines %}
+        <tr>
+            <td>{{ machine.factory_number }}</td>
+            <td>{{ machine.technique_model.name }}</td>
+            <td>{{ machine.engine_model.name }}</td>
+            <td>{{ machine.client.username }}</td>
+            <td>{{ machine.service_company.name }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Нет машин</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
