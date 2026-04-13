@@ -1,32 +1,73 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Мои машины</h1>
+<h1>Электронная сервисная книжка "Мой Силант"</h1>
+<p>Информация о комплектации и технических характеристиках Вашей техники</p>
 
-<table border="1" style="width:100%; border-collapse: collapse;">
+{% if can_add_maintenance or can_add_complaint %}
+<div style="margin-bottom: 20px;">
+    {% if can_add_maintenance %}
+    <a href="#" class="btn" style="background-color: #163E6C;">+ Добавить ТО</a>
+    {% endif %}
+    {% if can_add_complaint %}
+    <a href="#" class="btn" style="background-color: #D20A11;">+ Добавить рекламацию</a>
+    {% endif %}
+</div>
+{% endif %}
+
+<table class="data-table">
     <thead>
         <tr>
-            <th>Зав. №</th>
+            <th>Зав. № машины</th>
             <th>Модель техники</th>
             <th>Модель двигателя</th>
+            <th>Зав. № двигателя</th>
             <th>Клиент</th>
             <th>Сервисная компания</th>
         </tr>
     </thead>
     <tbody>
         {% for machine in machines %}
-        <tr>
+        <tr style="cursor: pointer;" onclick="location.href='/machine/{{ machine.id }}/'">
             <td>{{ machine.factory_number }}</td>
             <td>{{ machine.technique_model.name }}</td>
             <td>{{ machine.engine_model.name }}</td>
+            <td>{{ machine.engine_number }}</td>
             <td>{{ machine.client.username }}</td>
             <td>{{ machine.service_company.name }}</td>
         </tr>
         {% empty %}
         <tr>
-            <td colspan="5">Нет машин</td>
+            <td colspan="6">Нет доступных машин</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<style>
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+.data-table th {
+    background-color: #163E6C;
+    color: white;
+}
+.data-table tr:hover {
+    background-color: #EBE6D6;
+}
+.btn {
+    display: inline-block;
+    padding: 8px 16px;
+    margin-right: 10px;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+</style>
 {% endblock %}

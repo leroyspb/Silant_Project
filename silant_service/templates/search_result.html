@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Результат поиска</h1>
+
+{% if error %}
+    <div class="error">{{ error }}</div>
+{% elif machine %}
+    <p>Информация о комплектации и технических характеристиках Вашей техники</p>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Зав. № машины</th>
+                <th>Модель техники</th>
+                <th>Модель двигателя</th>
+                <th>Зав. № двигателя</th>
+                <th>Модель трансмиссии</th>
+                <th>Зав. № трансмиссии</th>
+                <th>Модель ведущего моста</th>
+                <th>Зав. № ведущего моста</th>
+                <th>Модель управляемого моста</th>
+                <th>Зав. № управляемого моста</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{ machine.factory_number }}</td>
+                <td>{{ machine.technique_model.name }}</td>
+                <td>{{ machine.engine_model.name }}</td>
+                <td>{{ machine.engine_number }}</td>
+                <td>{{ machine.transmission_model.name }}</td>
+                <td>{{ machine.transmission_number }}</td>
+                <td>{{ machine.drive_axle_model.name }}</td>
+                <td>{{ machine.drive_axle_number }}</td>
+                <td>{{ machine.steer_axle_model.name }}</td>
+                <td>{{ machine.steer_axle_number }}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endif %}
+
+<a href="{% url 'home' %}" class="btn" style="display: inline-block; margin-top: 20px;">Новый поиск</a>
+{% endblock %}

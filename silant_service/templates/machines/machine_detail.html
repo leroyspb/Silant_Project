@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Машина {{ machine.factory_number }}</h1>
+
+<div style="margin-bottom: 20px;">
+    {% if can_add_maintenance %}
+    <a href="{% url 'add_maintenance' machine.pk %}" class="btn" style="background-color: #163E6C;">+ Добавить ТО</a>
+    {% endif %}
+    {% if can_add_complaint %}
+    <a href="{% url 'add_complaint' machine.pk %}" class="btn" style="background-color: #D20A11;">+ Добавить рекламацию</a>
+    {% endif %}
+</div>
+
+<h2>Информация о машине</h2>
+<table class="data-table">
+    <tr><th>Поле</th><th>Значение</th></tr>
+    <tr><th>Зав. № машины</th><td>{{ machine.factory_number }}</td></tr>
+    <tr><th>Модель техники</th><td>{{ machine.technique_model.name }}</td></tr>
+    <tr><th>Модель двигателя</th><td>{{ machine.engine_model.name }}</td></tr>
+    <tr><th>Зав. № двигателя</th><td>{{ machine.engine_number }}</td></tr>
+    <tr><th>Модель трансмиссии</th><td>{{ machine.transmission_model.name }}</td></tr>
+    <tr><th>Зав. № трансмиссии</th><td>{{ machine.transmission_number }}</td></tr>
+    <tr><th>Модель ведущего моста</th><td>{{ machine.drive_axle_model.name }}</td></tr>
+    <tr><th>Зав. № ведущего моста</th><td>{{ machine.drive_axle_number }}</td></tr>
+    <tr><th>Модель управляемого моста</th><td>{{ machine.steer_axle_model.name }}</td></tr>
+    <tr><th>Зав. № управляемого моста</th><td>{{ machine.steer_axle_number }}</td></tr>
+    <tr><th>Договор поставки</th><td>{{ machine.supply_contract }}</td></tr>
+    <tr><th>Дата отгрузки</th><td>{{ machine.shipping_date }}</td></tr>
+    <tr><th>Грузополучатель</th><td>{{ machine.consignee }}</td></tr>
+    <tr><th>Адрес поставки</th><td>{{ machine.delivery_address }}</td></tr>
+    <tr><th>Комплектация</th><td>{{ machine.equipment }}</td></tr>
+    <tr><th>Клиент</th><td>{{ machine.client.username }}</td></tr>
+    <tr><th>Сервисная компания</th><td>{{ machine.service_company.name }}</td></tr>
+</table>
+
+<h2>Техническое обслуживание (ТО)</h2>
+<table class="data-table">
+    <thead>
+        <tr><th>Вид ТО</th><th>Дата</th><th>Наработка</th><th>№ заказ-наряда</th><th>Организация</th></tr>
+    </thead>
+    <tbody>
+        {% for to in maintenances %}
+        <tr>
+            <td>{{ to.maintenance_type.name }}</td>
+            <td>{{ to.maintenance_date }}</td>
+            <td>{{ to.operating_hours }}</td>
+            <td>{{ to.work_order_number }}</td>
+            <td>{{ to.organization.name }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">Нет данных о ТО</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Рекламации</h2>
+<table class="data-table">
+    <thead>
+        <tr><th>Дата отказа</th><th>Наработка</th><th>Узел отказа</th><th>Способ восстановления</th><th>Дата восстановления</th><th>Время простоя</th></tr>
+    </thead>
+    <tbody>
+        {% for claim in complaints %}
+        <tr>
+            <td>{{ claim.failure_date }}</td>
+            <td>{{ claim.operating_hours }}</td>
+            <td>{{ claim.failure_node }}</td>
+            <td>{{ claim.repair_method }}</td>
+            <td>{{ claim.recovery_date }}</td>
+            <td>{{ claim.downtime }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">Нет данных о рекламациях</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'machine_list' %}" class="btn">Назад к списку</a>
+{% endblock %}
