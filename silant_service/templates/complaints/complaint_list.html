@@ -57,6 +57,9 @@
             <th>Способ восстановления</th>
             <th>Дата восстановления</th>
             <th>Время простоя</th>
+            {% if is_manager or is_service %}
+            <th>Действия</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -69,10 +72,18 @@
             <td>{{ claim.repair_method }}</td>
             <td>{{ claim.recovery_date }}</td>
             <td>{{ claim.downtime }}</td>
+            {% if is_manager or is_service %}
+            <td style="text-align: center;">
+                <a href="{% url 'complaint_edit' claim.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
+                {% if is_manager %}
+                <a href="{% url 'complaint_delete' claim.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить рекламацию?')">🗑️ Удалить</a>
+                {% endif %}
+            </td>
+            {% endif %}
         </tr>
         {% empty %}
         <tr>
-            <td colspan="7">Нет данных о рекламациях</td>
+            <td colspan="{% if is_manager or is_service %}8{% else %}7{% endif %}" style="text-align: center;">Нет данных о рекламациях</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -91,6 +102,9 @@
 .data-table th {
     background-color: #163E6C;
     color: white;
+}
+.data-table tr:hover {
+    background-color: #EBE6D6;
 }
 </style>
 {% endblock %}

@@ -49,6 +49,9 @@
             <th>Наработка</th>
             <th>№ заказ-наряда</th>
             <th>Организация</th>
+            {% if is_manager or is_service %}
+            <th>Действия</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody>
@@ -60,10 +63,19 @@
             <td>{{ to.operating_hours }}</td>
             <td>{{ to.work_order_number }}</td>
             <td>{{ to.organization.name }}</td>
+            {% if is_manager or is_service %}
+            {% if is_manager or is_service or is_client %}
+            <td style="text-align: center;">
+                <a href="{% url 'maintenance_edit' to.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
+                {% if is_manager or is_client %}
+                <a href="{% url 'maintenance_delete' to.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить запись ТО?')">🗑️ Удалить</a>
+                {% endif %}
+            </td>
+            {% endif %}
         </tr>
         {% empty %}
         <tr>
-            <td colspan="6">Нет данных о ТО</td>
+            <td colspan="{% if is_manager or is_service %}7{% else %}6{% endif %}" style="text-align: center;">Нет данных о ТО</td>
         </tr>
         {% endfor %}
     </tbody>
@@ -82,6 +94,9 @@
 .data-table th {
     background-color: #163E6C;
     color: white;
+}
+.data-table tr:hover {
+    background-color: #EBE6D6;
 }
 </style>
 {% endblock %}

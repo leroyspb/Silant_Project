@@ -1,4 +1,4 @@
-from django.views.generic import ListView, UpdateView
+from django.views.generic import ListView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from .models import Maintenance
@@ -40,6 +40,7 @@ class MaintenanceListView(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        user = self.request.user
         
         # Данные для фильтров
         context['maintenance_types'] = MaintenanceType.objects.all()
@@ -49,6 +50,11 @@ class MaintenanceListView(LoginRequiredMixin, ListView):
         context['selected_type'] = self.request.GET.get('maintenance_type', '')
         context['selected_machine'] = self.request.GET.get('machine', '')
         context['selected_service'] = self.request.GET.get('service_company', '')
+        
+        # Права для кнопок редактирования/удаления
+        context['is_manager'] = user.is_superuser or user.groups.filter(name='Менеджер').exists()
+        context['is_service'] = user.groups.filter(name='Сервисная организация').exists()
+        context['is_client'] = user.groups.filter(name='Клиент').exists() 
         
         return context
 
@@ -67,12 +73,12 @@ class MaintenanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         is_service = user.groups.filter(name='Сервисная организация').exists()
         is_manager = user.is_superuser or user.groups.filter(name='Менеджер').exists()
         
+        if is_manager:
+            return True
         if is_client:
             return maintenance.machine.client == user
-        elif is_service:
+        if is_service:
             return maintenance.service_company.name == user.company_name
-        elif is_manager:
-            return True
         return False
     
     def get_success_url(self):
@@ -82,3 +88,30 @@ class MaintenanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         context = super().get_context_data(**kwargs)
         context['machine'] = self.get_object().machine
         return context
+
+
+class MaintenanceDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Maintenance
+    template_name = 'maintenances/maintenance_confirm_delete.html'
+    
+    def test_func(self):
+        user = self.request.user
+        maintenance = self.get_object()
+        
+        is_client = user.groups.filter(name='Клиент').exists()
+        is_service = user.groups.filter(name='Сервисная организация').exists()
+        is_manager = user.is_superuser or user.groups.filter(name='Менеджер').exists()
+        
+        # Менеджер может удалять всё
+        if is_manager:
+            return True
+        # Клиент может удалять ТО своих машин
+        if is_client:
+            return maintenance.machine.client == user
+        # Сервисная компания может удалять свои ТО
+        if is_service:
+            return maintenance.service_company.name == user.company_name
+        return False
+    
+    def get_success_url(self):
+        return reverse_lazy('machine_detail', kwargs={'pk': self.object.machine.pk})

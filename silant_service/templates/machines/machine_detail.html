@@ -82,7 +82,7 @@
                 {% if is_client or is_manager or user.groups.first.name == 'Сервисная организация' %}
                 <td style="text-align: center;">
                     <a href="{% url 'maintenance_edit' to.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
-                    {% if is_manager %}
+                    {% if is_client or is_manager %}
                     <a href="{% url 'maintenance_delete' to.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить запись ТО?')">🗑️ Удалить</a>
                     {% endif %}
                 </td>
