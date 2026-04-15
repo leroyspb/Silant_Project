@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Рекламации</h1>
+
+<!-- ФИЛЬТРЫ -->
+<div style="background-color: #EBE6D6; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
+        <div>
+            <label>Узел отказа:</label><br>
+            <select name="failure_node" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for node in failure_nodes %}
+                <option value="{{ node.name }}" {% if selected_failure_node == node.name %}selected{% endif %}>
+                    {{ node.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label>Способ восстановления:</label><br>
+            <select name="repair_method" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for method in repair_methods %}
+                <option value="{{ method.name }}" {% if selected_repair_method == method.name %}selected{% endif %}>
+                    {{ method.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label>Сервисная компания:</label><br>
+            <select name="service_company" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for company in service_companies %}
+                <option value="{{ company.id }}" {% if selected_service|stringformat:"s" == company.id|stringformat:"s" %}selected{% endif %}>
+                    {{ company.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none;">Применить</button>
+            <a href="{% url 'complaint_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none;">Сброс</a>
+        </div>
+    </form>
+</div>
+
+<!-- ТАБЛИЦА -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Машина</th>
+            <th>Дата отказа</th>
+            <th>Наработка</th>
+            <th>Узел отказа</th>
+            <th>Способ восстановления</th>
+            <th>Дата восстановления</th>
+            <th>Время простоя</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for claim in complaints %}
+        <tr>
+            <td>{{ claim.machine.factory_number }}</td>
+            <td>{{ claim.failure_date }}</td>
+            <td>{{ claim.operating_hours }}</td>
+            <td>{{ claim.failure_node }}</td>
+            <td>{{ claim.repair_method }}</td>
+            <td>{{ claim.recovery_date }}</td>
+            <td>{{ claim.downtime }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">Нет данных о рекламациях</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+.data-table th {
+    background-color: #163E6C;
+    color: white;
+}
+</style>
+{% endblock %}

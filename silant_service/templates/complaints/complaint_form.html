@@ -1,10 +1,137 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Добавление рекламации</h1>
+<h1>{% if form.instance.pk %}Редактирование рекламации{% else %}Добавление рекламации{% endif %}</h1>
+
 <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn">Сохранить</button>
+    
+    <div class="form-group">
+        <label for="{{ form.failure_date.id_for_label }}">Дата отказа:</label>
+        {{ form.failure_date }}
+        {% if form.failure_date.errors %}
+        <div class="error">{{ form.failure_date.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.operating_hours.id_for_label }}">Наработка, м/час:</label>
+        {{ form.operating_hours }}
+        {% if form.operating_hours.errors %}
+        <div class="error">{{ form.operating_hours.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.failure_node.id_for_label }}">Узел отказа:</label>
+        {{ form.failure_node }}
+        {% if form.failure_node.errors %}
+        <div class="error">{{ form.failure_node.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.failure_description.id_for_label }}">Описание отказа:</label>
+        {{ form.failure_description }}
+        {% if form.failure_description.errors %}
+        <div class="error">{{ form.failure_description.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.repair_method.id_for_label }}">Способ восстановления:</label>
+        {{ form.repair_method }}
+        {% if form.repair_method.errors %}
+        <div class="error">{{ form.repair_method.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.used_parts.id_for_label }}">Используемые запасные части:</label>
+        {{ form.used_parts }}
+        {% if form.used_parts.errors %}
+        <div class="error">{{ form.used_parts.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.recovery_date.id_for_label }}">Дата восстановления:</label>
+        {{ form.recovery_date }}
+        {% if form.recovery_date.errors %}
+        <div class="error">{{ form.recovery_date.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-group">
+        <label for="{{ form.service_company.id_for_label }}">Сервисная компания:</label>
+        {{ form.service_company }}
+        {% if form.service_company.errors %}
+        <div class="error">{{ form.service_company.errors }}</div>
+        {% endif %}
+    </div>
+    
+    <div class="form-buttons">
+        <button type="submit" class="btn-save">Сохранить</button>
+        <a href="{% url 'machine_detail' object.machine.pk %}" class="btn-cancel">Отмена</a>
+    </div>
 </form>
+
+<style>
+    .form-group {
+        margin-bottom: 15px;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #163E6C;
+    }
+    .form-input, .date-input, select, textarea {
+        width: 100%;
+        max-width: 400px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+    textarea {
+        max-width: 500px;
+    }
+    .error {
+        color: #D20A11;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+    .form-buttons {
+        margin-top: 20px;
+    }
+    .btn-save {
+        background-color: #163E6C;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    .btn-cancel {
+        background-color: #D20A11;
+        color: white;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    .btn-save:hover, .btn-cancel:hover {
+        opacity: 0.85;
+    }
+</style>
+
+<script>
+    // Убеждаемся, что даты отображаются в input type="date"
+    document.addEventListener('DOMContentLoaded', function() {
+        // Если есть значение в поле даты, оно автоматически подставится
+        // Django forms уже подставляет значения при редактировании
+    });
+</script>
 {% endblock %}

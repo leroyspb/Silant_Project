@@ -4,7 +4,72 @@
 <h1>Электронная сервисная книжка "Мой Силант"</h1>
 <p>Информация о комплектации и технических характеристиках Вашей техники</p>
 
-{% if can_add_maintenance or can_add_complaint %}
+<!-- ФИЛЬТРЫ -->
+<div style="background-color: #EBE6D6; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
+        <div>
+            <label style="font-size: 12px;">Модель техники:</label><br>
+            <select name="technique_model" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for model in technique_models %}
+                <option value="{{ model.id }}" {% if selected_technique|stringformat:"s" == model.id|stringformat:"s" %}selected{% endif %}>
+                    {{ model.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 12px;">Модель двигателя:</label><br>
+            <select name="engine_model" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for model in engine_models %}
+                <option value="{{ model.id }}" {% if selected_engine|stringformat:"s" == model.id|stringformat:"s" %}selected{% endif %}>
+                    {{ model.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 12px;">Модель трансмиссии:</label><br>
+            <select name="transmission_model" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for model in transmission_models %}
+                <option value="{{ model.id }}" {% if selected_transmission|stringformat:"s" == model.id|stringformat:"s" %}selected{% endif %}>
+                    {{ model.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 12px;">Ведущий мост:</label><br>
+            <select name="drive_axle_model" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for model in drive_axle_models %}
+                <option value="{{ model.id }}" {% if selected_drive_axle|stringformat:"s" == model.id|stringformat:"s" %}selected{% endif %}>
+                    {{ model.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label style="font-size: 12px;">Управляемый мост:</label><br>
+            <select name="steer_axle_model" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for model in steer_axle_models %}
+                <option value="{{ model.id }}" {% if selected_steer_axle|stringformat:"s" == model.id|stringformat:"s" %}selected{% endif %}>
+                    {{ model.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none; border-radius: 3px;">Применить</button>
+            <a href="{% url 'machine_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none; border-radius: 3px;">Сброс</a>
+        </div>
+    </form>
+</div>
+
+<!-- КНОПКИ ДОБАВЛЕНИЯ -->
 <div style="margin-bottom: 20px;">
     {% if can_add_maintenance %}
     <a href="#" class="btn" style="background-color: #163E6C;">+ Добавить ТО</a>
@@ -13,8 +78,8 @@
     <a href="#" class="btn" style="background-color: #D20A11;">+ Добавить рекламацию</a>
     {% endif %}
 </div>
-{% endif %}
 
+<!-- ТАБЛИЦА -->
 <table class="data-table">
     <thead>
         <tr>
@@ -28,7 +93,7 @@
     </thead>
     <tbody>
         {% for machine in machines %}
-        <tr style="cursor: pointer;" onclick="location.href='/machine/{{ machine.id }}/'">
+        <tr onclick="location.href='/machine/{{ machine.id }}/'" style="cursor: pointer;">
             <td>{{ machine.factory_number }}</td>
             <td>{{ machine.technique_model.name }}</td>
             <td>{{ machine.engine_model.name }}</td>

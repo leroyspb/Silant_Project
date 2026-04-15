@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Техническое обслуживание (ТО)</h1>
+
+<!-- ФИЛЬТРЫ -->
+<div style="background-color: #EBE6D6; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+    <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
+        <div>
+            <label>Вид ТО:</label><br>
+            <select name="maintenance_type" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for type in maintenance_types %}
+                <option value="{{ type.id }}" {% if selected_type|stringformat:"s" == type.id|stringformat:"s" %}selected{% endif %}>
+                    {{ type.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label>Зав. № машины:</label><br>
+            <input type="text" name="machine" value="{{ selected_machine }}" placeholder="Введите номер" style="padding: 5px;">
+        </div>
+        <div>
+            <label>Сервисная компания:</label><br>
+            <select name="service_company" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for company in service_companies %}
+                <option value="{{ company.id }}" {% if selected_service|stringformat:"s" == company.id|stringformat:"s" %}selected{% endif %}>
+                    {{ company.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none;">Применить</button>
+            <a href="{% url 'maintenance_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none;">Сброс</a>
+        </div>
+    </form>
+</div>
+
+<!-- ТАБЛИЦА -->
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Машина</th>
+            <th>Вид ТО</th>
+            <th>Дата проведения</th>
+            <th>Наработка</th>
+            <th>№ заказ-наряда</th>
+            <th>Организация</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for to in maintenances %}
+        <tr>
+            <td>{{ to.machine.factory_number }}</td>
+            <td>{{ to.maintenance_type.name }}</td>
+            <td>{{ to.maintenance_date }}</td>
+            <td>{{ to.operating_hours }}</td>
+            <td>{{ to.work_order_number }}</td>
+            <td>{{ to.organization.name }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">Нет данных о ТО</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+.data-table th {
+    background-color: #163E6C;
+    color: white;
+}
+</style>
+{% endblock %}

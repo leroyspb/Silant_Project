@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Удаление записи ТО</h1>
+
+<p>Вы уверены, что хотите удалить запись ТО для машины <strong>{{ object.machine.factory_number }}</strong>?</p>
+<p>Вид ТО: <strong>{{ object.maintenance_type.name }}</strong></p>
+<p>Дата: <strong>{{ object.maintenance_date }}</strong></p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" style="background-color: #D20A11; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Да, удалить</button>
+    <a href="{% url 'machine_detail' object.machine.pk %}" style="background-color: #163E6C; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Отмена</a>
+</form>
+{% endblock %}

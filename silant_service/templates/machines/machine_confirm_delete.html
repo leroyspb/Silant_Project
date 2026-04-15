@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Удаление машины</h1>
+
+<p>Вы уверены, что хотите удалить машину <strong>{{ machine.factory_number }}</strong>?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" style="background-color: #D20A11; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Да, удалить</button>
+    <a href="{% url 'machine_detail' machine.pk %}" style="background-color: #163E6C; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">Отмена</a>
+</form>
+{% endblock %}
