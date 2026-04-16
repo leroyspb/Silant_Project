@@ -3,11 +3,16 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from machines.views import (
     MachineListView, MachineDetailView, MachineUpdateView, MachineDeleteView,
-    search_machine, MaintenanceCreateView, MaintenanceUpdateView, MaintenanceDeleteView,
-    ComplaintCreateView, ComplaintUpdateView, ComplaintDeleteView
+    search_machine
 )
-from maintenances.views import MaintenanceListView
-from complaints.views import ComplaintListView
+from maintenances.views import (
+    MaintenanceListView, MaintenanceCreateView, 
+    MaintenanceUpdateView, MaintenanceDeleteView
+)
+from complaints.views import (
+    ComplaintListView, ComplaintCreateView, 
+    ComplaintUpdateView, ComplaintDeleteView
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),

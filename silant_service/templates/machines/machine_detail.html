@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Машина {{ machine.factory_number }}</h1>
+<h1>Машина {{ machine.technique_model.name }}</h1>
 
 {% if is_manager %}
 <div style="margin-bottom: 20px;">
