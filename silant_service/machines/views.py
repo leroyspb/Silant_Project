@@ -9,7 +9,7 @@ from maintenances.forms import MaintenanceForm
 from complaints.forms import ComplaintForm
 from reference_books.models import (
     TechniqueModel, EngineModel, TransmissionModel, 
-    DriveAxleModel, SteerAxleModel
+    DriveAxleModel, SteerAxleModel,
 )
 
 
@@ -18,6 +18,13 @@ class ManagerRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser or self.request.user.groups.filter(name='Менеджер').exists()
 
+class MachineCreateView(LoginRequiredMixin, ManagerRequiredMixin, CreateView):
+    model = Machine
+    fields = '__all__'
+    template_name = 'machines/machine_form.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('machine_detail', kwargs={'pk': self.object.pk})
 
 class MachineListView(LoginRequiredMixin, ListView):
     model = Machine
@@ -56,6 +63,10 @@ class MachineListView(LoginRequiredMixin, ListView):
         steer_axle = self.request.GET.get('steer_axle_model')
         if steer_axle:
             queryset = queryset.filter(steer_axle_model_id=steer_axle)
+
+        engine_number = self.request.GET.get('engine_number')
+        if engine_number:
+            queryset = queryset.filter(engine_number__icontains=engine_number)
         
         return queryset
     
@@ -85,6 +96,7 @@ class MachineListView(LoginRequiredMixin, ListView):
         context['selected_transmission'] = self.request.GET.get('transmission_model', '')
         context['selected_drive_axle'] = self.request.GET.get('drive_axle_model', '')
         context['selected_steer_axle'] = self.request.GET.get('steer_axle_model', '')
+        context['selected_engine_number'] = self.request.GET.get('engine_number', '')
         
         return context
 

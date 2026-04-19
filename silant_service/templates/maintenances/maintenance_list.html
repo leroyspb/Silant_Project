@@ -7,34 +7,31 @@
 <div style="background-color: #EBE6D6; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
     <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
         <div>
-            <label>Вид ТО:</label><br>
-            <select name="maintenance_type" style="padding: 5px;">
+            <label style="font-size: 12px;">Вид ТО:</label><br>
+            <select name="maintenance_type" style="padding: 5px; min-width: 150px;">
                 <option value="">Все</option>
                 {% for type in maintenance_types %}
-                <option value="{{ type.id }}" {% if selected_type|stringformat:"s" == type.id|stringformat:"s" %}selected{% endif %}>
-                    {{ type.name }}
-                </option>
+                <option value="{{ type.id }}">{{ type.name }}</option>
                 {% endfor %}
             </select>
         </div>
         <div>
-            <label>Зав. № машины:</label><br>
-            <input type="text" name="machine" value="{{ selected_machine }}" placeholder="Введите номер" style="padding: 5px;">
+            <label style="font-size: 12px;">Зав. № машины:</label><br>
+            
+            <input type="text" name="machine_number" value="{{ selected_machine_number }}" style="padding: 5px; width: 150px;">
         </div>
         <div>
-            <label>Сервисная компания:</label><br>
-            <select name="service_company" style="padding: 5px;">
+            <label style="font-size: 12px;">Сервисная компания:</label><br>
+            <select name="service_company" style="padding: 5px; min-width: 150px;">
                 <option value="">Все</option>
                 {% for company in service_companies %}
-                <option value="{{ company.id }}" {% if selected_service|stringformat:"s" == company.id|stringformat:"s" %}selected{% endif %}>
-                    {{ company.name }}
-                </option>
+                <option value="{{ company.id }}">{{ company.name }}</option>
                 {% endfor %}
             </select>
         </div>
         <div>
-            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none;">Применить</button>
-            <a href="{% url 'maintenance_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none;">Сброс</a>
+            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none; border-radius: 3px;">Применить</button>
+            <a href="{% url 'maintenance_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none; border-radius: 3px;">Сброс</a>
         </div>
     </form>
 </div>
@@ -43,39 +40,42 @@
 <table class="data-table">
     <thead>
         <tr>
-            <th>Машина</th>
+            <th>Машина (зав. №)</th>
             <th>Вид ТО</th>
             <th>Дата проведения</th>
-            <th>Наработка</th>
+            <th>Наработка, м/час</th>
             <th>№ заказ-наряда</th>
+            <th>Дата заказ-наряда</th>
             <th>Организация</th>
+            <th>Сервисная компания</th>
             {% if is_manager or is_service %}
             <th>Действия</th>
             {% endif %}
         </tr>
     </thead>
     <tbody>
-        {% for to in maintenances %}
-        <tr>
-            <td>{{ to.machine.factory_number }}</td>
-            <td>{{ to.maintenance_type.name }}</td>
-            <td>{{ to.maintenance_date }}</td>
-            <td>{{ to.operating_hours }}</td>
-            <td>{{ to.work_order_number }}</td>
-            <td>{{ to.organization.name }}</td>
+        {% for item in maintenances %}
+        <tr onclick="location.href='/maintenance/{{ item.pk }}/'" style="cursor: pointer;">
+            <td>{{ item.machine.factory_number }}</td>
+            <td>{{ item.maintenance_type.name }}</td>
+            <td>{{ item.maintenance_date }}</td>
+            <td>{{ item.operating_hours }}</td>
+            <td>{{ item.work_order_number }}</td>
+            <td>{{ item.work_order_date }}</td>
+            <td>{{ item.organization.name }}</td>
+            <td>{{ item.service_company.name }}</td>
             {% if is_manager or is_service %}
-            {% if is_manager or is_service or is_client %}
-            <td style="text-align: center;">
-                <a href="{% url 'maintenance_edit' to.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
-                {% if is_manager or is_client %}
-                <a href="{% url 'maintenance_delete' to.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить запись ТО?')">🗑️ Удалить</a>
+            <td onclick="event.stopPropagation();" style="text-align: center;">
+                <a href="{% url 'maintenance_edit' item.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
+                {% if is_manager %}
+                <a href="{% url 'maintenance_delete' item.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить запись ТО?')">🗑️ Удалить</a>
                 {% endif %}
             </td>
             {% endif %}
         </tr>
         {% empty %}
         <tr>
-            <td colspan="{% if is_manager or is_service %}7{% else %}6{% endif %}" style="text-align: center;">Нет данных о ТО</td>
+            <td colspan="9" style="text-align: center;">Нет данных о ТО</td>
         </tr>
         {% endfor %}
     </tbody>

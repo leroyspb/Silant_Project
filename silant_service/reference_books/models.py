@@ -84,3 +84,4 @@ class ServiceCompany(BaseReference):
     class Meta:
         verbose_name = 'Сервисная компания'
         verbose_name_plural = 'Сервисные компании'
+

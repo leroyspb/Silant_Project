@@ -1,4 +1,4 @@
-from django.views.generic import ListView, UpdateView, DeleteView, CreateView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -7,7 +7,6 @@ from .forms import MaintenanceForm
 from reference_books.models import MaintenanceType, ServiceCompany
 from machines.models import Machine
 
-
 class MaintenanceListView(LoginRequiredMixin, ListView):
     model = Maintenance
     template_name = 'maintenances/maintenance_list.html'
@@ -15,13 +14,47 @@ class MaintenanceListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         user = self.request.user
+        
         if user.is_superuser or user.groups.filter(name='Менеджер').exists():
-            return Maintenance.objects.all()
+            queryset = Maintenance.objects.all()
         elif user.groups.filter(name='Клиент').exists():
-            return Maintenance.objects.filter(machine__client=user)
+            queryset = Maintenance.objects.filter(machine__client=user)
         elif user.groups.filter(name='Сервисная организация').exists():
-            return Maintenance.objects.filter(service_company__name=user.company_name)
-        return Maintenance.objects.none()
+            queryset = Maintenance.objects.filter(service_company__name=user.company_name)
+        else:
+            queryset = Maintenance.objects.none()
+        
+        # Фильтрация
+        maintenance_type = self.request.GET.get('maintenance_type')
+        if maintenance_type:
+            queryset = queryset.filter(maintenance_type_id=maintenance_type)
+        
+        machine_number = self.request.GET.get('machine_number')
+        if machine_number:
+            queryset = queryset.filter(machine__factory_number__icontains=machine_number)
+        
+        service_company = self.request.GET.get('service_company')
+        if service_company:
+            queryset = queryset.filter(service_company_id=service_company)
+        
+        return queryset.order_by('-maintenance_date')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+        
+        context['maintenance_types'] = MaintenanceType.objects.all()
+        context['service_companies'] = ServiceCompany.objects.all()
+        context['machines'] = Machine.objects.all()  # для фильтра по номеру
+        
+        context['selected_type'] = self.request.GET.get('maintenance_type', '')
+        context['selected_machine_number'] = self.request.GET.get('machine_number', '')
+        context['selected_service'] = self.request.GET.get('service_company', '')
+        
+        context['is_manager'] = user.is_superuser or user.groups.filter(name='Менеджер').exists()
+        context['is_service'] = user.groups.filter(name='Сервисная организация').exists()
+        
+        return context
 
 
 class MaintenanceCreateView(LoginRequiredMixin, CreateView):
@@ -157,3 +190,18 @@ class MaintenanceDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView)
     
     def get_success_url(self):
         return reverse_lazy('machine_detail', kwargs={'pk': self.object.machine.pk})
+    
+class MaintenanceDetailView(LoginRequiredMixin, DetailView):
+    model = Maintenance
+    template_name = 'maintenances/maintenance_detail.html'
+    context_object_name = 'maintenance'
+    
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser or user.groups.filter(name='Менеджер').exists():
+            return Maintenance.objects.all()
+        elif user.groups.filter(name='Клиент').exists():
+            return Maintenance.objects.filter(machine__client=user)
+        elif user.groups.filter(name='Сервисная организация').exists():
+            return Maintenance.objects.filter(service_company__name=user.company_name)
+        return Maintenance.objects.none()

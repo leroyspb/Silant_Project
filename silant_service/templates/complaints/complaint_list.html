@@ -7,41 +7,35 @@
 <div style="background-color: #EBE6D6; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
     <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
         <div>
-            <label>Узел отказа:</label><br>
-            <select name="failure_node" style="padding: 5px;">
+            <label style="font-size: 12px;">Узел отказа:</label><br>
+            <select name="failure_node" style="padding: 5px; min-width: 150px;">
                 <option value="">Все</option>
                 {% for node in failure_nodes %}
-                <option value="{{ node.name }}" {% if selected_failure_node == node.name %}selected{% endif %}>
-                    {{ node.name }}
-                </option>
+                <option value="{{ node.id }}">{{ node.name }}</option>
                 {% endfor %}
             </select>
         </div>
         <div>
-            <label>Способ восстановления:</label><br>
-            <select name="repair_method" style="padding: 5px;">
+            <label style="font-size: 12px;">Способ восстановления:</label><br>
+            <select name="repair_method" style="padding: 5px; min-width: 150px;">
                 <option value="">Все</option>
                 {% for method in repair_methods %}
-                <option value="{{ method.name }}" {% if selected_repair_method == method.name %}selected{% endif %}>
-                    {{ method.name }}
-                </option>
+                <option value="{{ method.id }}">{{ method.name }}</option>
                 {% endfor %}
             </select>
         </div>
         <div>
-            <label>Сервисная компания:</label><br>
-            <select name="service_company" style="padding: 5px;">
+            <label style="font-size: 12px;">Сервисная компания:</label><br>
+            <select name="service_company" style="padding: 5px; min-width: 150px;">
                 <option value="">Все</option>
                 {% for company in service_companies %}
-                <option value="{{ company.id }}" {% if selected_service|stringformat:"s" == company.id|stringformat:"s" %}selected{% endif %}>
-                    {{ company.name }}
-                </option>
+                <option value="{{ company.id }}">{{ company.name }}</option>
                 {% endfor %}
             </select>
         </div>
         <div>
-            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none;">Применить</button>
-            <a href="{% url 'complaint_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none;">Сброс</a>
+            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none; border-radius: 3px;">Применить</button>
+            <a href="{% url 'complaint_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none; border-radius: 3px;">Сброс</a>
         </div>
     </form>
 </div>
@@ -54,9 +48,11 @@
             <th>Дата отказа</th>
             <th>Наработка</th>
             <th>Узел отказа</th>
+            <th>Описание</th>
             <th>Способ восстановления</th>
             <th>Дата восстановления</th>
             <th>Время простоя</th>
+            <th>Сервисная компания</th>
             {% if is_manager or is_service %}
             <th>Действия</th>
             {% endif %}
@@ -64,16 +60,18 @@
     </thead>
     <tbody>
         {% for claim in complaints %}
-        <tr>
+        <tr onclick="location.href='/complaint/{{ claim.pk }}/'" style="cursor: pointer;">
             <td>{{ claim.machine.factory_number }}</td>
             <td>{{ claim.failure_date }}</td>
             <td>{{ claim.operating_hours }}</td>
-            <td>{{ claim.failure_node }}</td>
-            <td>{{ claim.repair_method }}</td>
+            <td>{{ claim.failure_node.name }}</td>
+            <td>{{ claim.failure_description|truncatechars:50 }}</td>
+            <td>{{ claim.repair_method.name }}</td>
             <td>{{ claim.recovery_date }}</td>
             <td>{{ claim.downtime }}</td>
+            <td>{{ claim.service_company.name }}</td>
             {% if is_manager or is_service %}
-            <td style="text-align: center;">
+            <td onclick="event.stopPropagation();" style="text-align: center;">
                 <a href="{% url 'complaint_edit' claim.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
                 {% if is_manager %}
                 <a href="{% url 'complaint_delete' claim.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить рекламацию?')">🗑️ Удалить</a>
@@ -83,7 +81,7 @@
         </tr>
         {% empty %}
         <tr>
-            <td colspan="{% if is_manager or is_service %}8{% else %}7{% endif %}" style="text-align: center;">Нет данных о рекламациях</td>
+            <td colspan="10" style="text-align: center;">Нет данных о рекламациях</td>
         </tr>
         {% endfor %}
     </tbody>

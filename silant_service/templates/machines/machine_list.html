@@ -41,18 +41,7 @@
             </select>
         </div>
         <div>
-            <label style="font-size: 12px;">Ведущий мост:</label><br>
-            <select name="drive_axle_model" style="padding: 5px;">
-                <option value="">Все</option>
-                {% for model in drive_axle_models %}
-                <option value="{{ model.id }}" {% if selected_drive_axle|stringformat:"s" == model.id|stringformat:"s" %}selected{% endif %}>
-                    {{ model.name }}
-                </option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label style="font-size: 12px;">Управляемый мост:</label><br>
+            <label style="font-size: 12px;">Модель управляемого моста:</label><br>
             <select name="steer_axle_model" style="padding: 5px;">
                 <option value="">Все</option>
                 {% for model in steer_axle_models %}
@@ -63,26 +52,38 @@
             </select>
         </div>
         <div>
+            <label style="font-size: 12px;">Модель ведущего моста:</label><br>
+            <select name="drive_axle_model" style="padding: 5px;">
+                <option value="">Все</option>
+                {% for model in drive_axle_models %}
+                <option value="{{ model.id }}" {% if selected_drive_axle|stringformat:"s" == model.id|stringformat:"s" %}selected{% endif %}>
+                    {{ model.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div>
             <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none; border-radius: 3px;">Применить</button>
             <a href="{% url 'machine_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none; border-radius: 3px;">Сброс</a>
         </div>
     </form>
 </div>
 
-<!-- КНОПКИ ДОБАВЛЕНИЯ -->
+<!-- КНОПКА ДОБАВЛЕНИЯ МАШИНЫ (ТОЛЬКО ДЛЯ МЕНЕДЖЕРА) -->
+{% if is_manager %}
 <div style="margin-bottom: 20px;">
-    {% if can_add_maintenance %}
-    <a href="#" class="btn" style="background-color: #163E6C;">+ Добавить ТО</a>
-    {% endif %}
-    {% if can_add_complaint %}
-    <a href="#" class="btn" style="background-color: #D20A11;">+ Добавить рекламацию</a>
-    {% endif %}
+    <a href="{% url 'machine_add' %}" class="btn" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;">
+        + Добавить машину
+    </a>
 </div>
+{% endif %}
 
 <!-- ТАБЛИЦА -->
 <table class="data-table">
     <thead>
         <tr>
+            <th>Дата отгрузки с завода</th>
             <th>Зав. № машины</th>
             <th>Модель техники</th>
             <th>Модель двигателя</th>
@@ -94,6 +95,7 @@
     <tbody>
         {% for machine in machines %}
         <tr onclick="location.href='/machine/{{ machine.id }}/'" style="cursor: pointer;">
+            <td>{{ machine.shipping_date }}</td>
             <td>{{ machine.factory_number }}</td>
             <td>{{ machine.technique_model.name }}</td>
             <td>{{ machine.engine_model.name }}</td>
