@@ -14,14 +14,6 @@
             <div class="logo">
                 <img src="{% static 'images/logo.png' %}" alt="Силант" height="50">
             </div>
-            <!-- {% if user.is_authenticated %}
-            <div class="nav-links" style="margin-top: 10px;">
-                <a href="{% url 'machine_list' %}" style="color: white; text-decoration: none; margin-right: 15px;">Машины</a>
-                <a href="{% url 'maintenance_list' %}" style="color: white; text-decoration: none; margin-right: 15px;">ТО</a>
-                <a href="{% url 'complaint_list' %}" style="color: white; text-decoration: none;">Рекламации</a>
-            </div>
-            {% else %}
-            {% endif %} -->
             <div class="contacts">+7-8352-20-12-09, telegram</div>
             <div class="auth">
                 {% if user.is_authenticated %}
