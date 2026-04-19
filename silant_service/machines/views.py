@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from .models import Machine
 from maintenances.models import Maintenance
@@ -33,70 +33,141 @@ class MachineListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         user = self.request.user
+        tab = self.request.GET.get('tab', 'machines')
         
+        # Базовый queryset для машин
         if user.is_superuser or user.groups.filter(name='Менеджер').exists():
-            queryset = Machine.objects.all()
+            machines_queryset = Machine.objects.all()
         elif user.groups.filter(name='Клиент').exists():
-            queryset = Machine.objects.filter(client=user)
+            machines_queryset = Machine.objects.filter(client=user)
         elif user.groups.filter(name='Сервисная организация').exists():
-            queryset = Machine.objects.filter(service_company__name=user.company_name)
+            machines_queryset = Machine.objects.filter(service_company__name=user.company_name)
         else:
-            queryset = Machine.objects.none()
+            machines_queryset = Machine.objects.none()
         
-        # Фильтрация
-        technique = self.request.GET.get('technique_model')
-        if technique:
-            queryset = queryset.filter(technique_model_id=technique)
+        # Фильтрация для вкладки МАШИНЫ (только если активна вкладка машин)
+        if tab == 'machines':
+            technique = self.request.GET.get('technique_model')
+            if technique:
+                machines_queryset = machines_queryset.filter(technique_model_id=technique)
+            
+            engine = self.request.GET.get('engine_model')
+            if engine:
+                machines_queryset = machines_queryset.filter(engine_model_id=engine)
+            
+            transmission = self.request.GET.get('transmission_model')
+            if transmission:
+                machines_queryset = machines_queryset.filter(transmission_model_id=transmission)
+            
+            drive_axle = self.request.GET.get('drive_axle_model')
+            if drive_axle:
+                machines_queryset = machines_queryset.filter(drive_axle_model_id=drive_axle)
+            
+            steer_axle = self.request.GET.get('steer_axle_model')
+            if steer_axle:
+                machines_queryset = machines_queryset.filter(steer_axle_model_id=steer_axle)
         
-        engine = self.request.GET.get('engine_model')
-        if engine:
-            queryset = queryset.filter(engine_model_id=engine)
-        
-        transmission = self.request.GET.get('transmission_model')
-        if transmission:
-            queryset = queryset.filter(transmission_model_id=transmission)
-        
-        drive_axle = self.request.GET.get('drive_axle_model')
-        if drive_axle:
-            queryset = queryset.filter(drive_axle_model_id=drive_axle)
-        
-        steer_axle = self.request.GET.get('steer_axle_model')
-        if steer_axle:
-            queryset = queryset.filter(steer_axle_model_id=steer_axle)
-
-        engine_number = self.request.GET.get('engine_number')
-        if engine_number:
-            queryset = queryset.filter(engine_number__icontains=engine_number)
-        
-        return queryset
+        return machines_queryset
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        tab = self.request.GET.get('tab', 'machines')
         
-        is_client = user.groups.filter(name='Клиент').exists()
-        is_service = user.groups.filter(name='Сервисная организация').exists()
-        is_manager = user.is_superuser or user.groups.filter(name='Менеджер').exists()
+        # Получаем все машины для ТО и рекламаций (с учётом прав)
+        if user.is_superuser or user.groups.filter(name='Менеджер').exists():
+            machines_for_related = Machine.objects.all()
+        elif user.groups.filter(name='Клиент').exists():
+            machines_for_related = Machine.objects.filter(client=user)
+        elif user.groups.filter(name='Сервисная организация').exists():
+            machines_for_related = Machine.objects.filter(service_company__name=user.company_name)
+        else:
+            machines_for_related = Machine.objects.none()
         
-        context['can_add_maintenance'] = is_client or is_service or is_manager
-        context['can_add_complaint'] = is_service or is_manager
-        context['is_manager'] = is_manager
-        context['is_client'] = is_client
+        from maintenances.models import Maintenance
+        from complaints.models import Complaint
         
-        # Данные для фильтров
+        # Базовые queryset для ТО и рекламаций
+        maintenances_qs = Maintenance.objects.filter(machine__in=machines_for_related)
+        complaints_qs = Complaint.objects.filter(machine__in=machines_for_related)
+        
+        # ФИЛЬТРАЦИЯ ДЛЯ ТО (применяется всегда, независимо от активной вкладки)
+        maintenance_type = self.request.GET.get('maintenance_type')
+        if maintenance_type:
+            maintenances_qs = maintenances_qs.filter(maintenance_type_id=maintenance_type)
+        
+        machine_number = self.request.GET.get('machine_number')
+        if machine_number:
+            maintenances_qs = maintenances_qs.filter(machine__factory_number__icontains=machine_number)
+        
+        service_company_to = self.request.GET.get('service_company_to')
+        if service_company_to:
+            maintenances_qs = maintenances_qs.filter(service_company_id=service_company_to)
+        
+        # ФИЛЬТРАЦИЯ ДЛЯ РЕКЛАМАЦИЙ (применяется всегда, независимо от активной вкладки)
+        failure_node = self.request.GET.get('failure_node')
+        if failure_node:
+            complaints_qs = complaints_qs.filter(failure_node_id=failure_node)
+        
+        repair_method = self.request.GET.get('repair_method')
+        if repair_method:
+            complaints_qs = complaints_qs.filter(repair_method_id=repair_method)
+        
+        service_company_claim = self.request.GET.get('service_company_claim')
+        if service_company_claim:
+            complaints_qs = complaints_qs.filter(service_company_id=service_company_claim)
+        
+        context['maintenances'] = maintenances_qs.order_by('-maintenance_date')
+        context['complaints'] = complaints_qs.order_by('-failure_date')
+        
+        # Данные для фильтров МАШИН
+        from reference_books.models import (
+            TechniqueModel, EngineModel, TransmissionModel, 
+            DriveAxleModel, SteerAxleModel
+        )
+        
         context['technique_models'] = TechniqueModel.objects.all()
         context['engine_models'] = EngineModel.objects.all()
         context['transmission_models'] = TransmissionModel.objects.all()
         context['drive_axle_models'] = DriveAxleModel.objects.all()
         context['steer_axle_models'] = SteerAxleModel.objects.all()
         
-        # Выбранные значения
+        # Выбранные значения фильтров МАШИН
         context['selected_technique'] = self.request.GET.get('technique_model', '')
         context['selected_engine'] = self.request.GET.get('engine_model', '')
         context['selected_transmission'] = self.request.GET.get('transmission_model', '')
         context['selected_drive_axle'] = self.request.GET.get('drive_axle_model', '')
         context['selected_steer_axle'] = self.request.GET.get('steer_axle_model', '')
-        context['selected_engine_number'] = self.request.GET.get('engine_number', '')
+        
+        # ДАННЫЕ ДЛЯ ФИЛЬТРОВ ТО И РЕКЛАМАЦИЙ
+        from reference_books.models import MaintenanceType, ServiceCompany, FailureNode, RepairMethod
+        
+        context['maintenance_types'] = MaintenanceType.objects.all()
+        context['service_companies'] = ServiceCompany.objects.all()
+        context['failure_nodes'] = FailureNode.objects.all()
+        context['repair_methods'] = RepairMethod.objects.all()
+        
+        # Выбранные значения фильтров для ТО
+        context['selected_maintenance_type'] = self.request.GET.get('maintenance_type', '')
+        context['selected_machine_number'] = self.request.GET.get('machine_number', '')
+        context['selected_service_to'] = self.request.GET.get('service_company_to', '')
+        
+        # Выбранные значения фильтров для Рекламаций
+        context['selected_failure_node'] = self.request.GET.get('failure_node', '')
+        context['selected_repair_method'] = self.request.GET.get('repair_method', '')
+        context['selected_service_claim'] = self.request.GET.get('service_company_claim', '')
+        
+        # Права
+        is_client = user.groups.filter(name='Клиент').exists()
+        is_service = user.groups.filter(name='Сервисная организация').exists()
+        is_manager = user.is_superuser or user.groups.filter(name='Менеджер').exists()
+        
+        context['is_manager'] = is_manager
+        context['is_service'] = is_service
+        context['is_client'] = is_client
+        context['can_add_maintenance'] = is_client or is_service or is_manager
+        context['can_add_complaint'] = is_service or is_manager
+        context['active_tab'] = tab
         
         return context
 
@@ -122,22 +193,56 @@ class MachineDetailView(LoginRequiredMixin, DetailView):
         user = self.request.user
         machine = self.get_object()
         
-        context['maintenances'] = Maintenance.objects.filter(machine=machine)
-        context['complaints'] = Complaint.objects.filter(machine=machine)
-        
         is_client = user.groups.filter(name='Клиент').exists()
         is_service = user.groups.filter(name='Сервисная организация').exists()
         is_manager = user.is_superuser or user.groups.filter(name='Менеджер').exists()
         
-        context['can_add_maintenance'] = is_client or is_service or is_manager
-        context['can_edit_maintenance'] = is_client or is_service or is_manager
-        context['can_add_complaint'] = is_service or is_manager
-        context['can_edit'] = is_service or is_manager
         context['is_manager'] = is_manager
+        context['is_service'] = is_service
         context['is_client'] = is_client
+        context['can_edit'] = is_service or is_manager
+        context['can_add_maintenance'] = is_client or is_service or is_manager
+        context['can_add_complaint'] = is_service or is_manager
+       
+        # Базовые queryset для ТО и рекламаций
+        maintenances_qs = Maintenance.objects.filter(machine=machine)
+        complaints_qs = Complaint.objects.filter(machine=machine)
+        
+        # ФИЛЬТРАЦИЯ ДЛЯ ТО
+        maintenance_type = self.request.GET.get('maintenance_type')
+        if maintenance_type:
+            maintenances_qs = maintenances_qs.filter(maintenance_type_id=maintenance_type)
+        
+        organization = self.request.GET.get('organization')
+        if organization:
+            maintenances_qs = maintenances_qs.filter(organization_id=organization)
+        
+        # ФИЛЬТРАЦИЯ ДЛЯ РЕКЛАМАЦИЙ
+        failure_node = self.request.GET.get('failure_node')
+        if failure_node:
+            complaints_qs = complaints_qs.filter(failure_node_id=failure_node)
+        
+        repair_method = self.request.GET.get('repair_method')
+        if repair_method:
+            complaints_qs = complaints_qs.filter(repair_method_id=repair_method)
+        
+        context['filtered_maintenances'] = maintenances_qs.order_by('-maintenance_date')
+        context['filtered_complaints'] = complaints_qs.order_by('-failure_date')
+        
+        # Данные для фильтров
+        from reference_books.models import MaintenanceType, ServiceCompany, FailureNode, RepairMethod
+        context['maintenance_types'] = MaintenanceType.objects.all()
+        context['organizations'] = ServiceCompany.objects.all()
+        context['failure_nodes'] = FailureNode.objects.all()
+        context['repair_methods'] = RepairMethod.objects.all()
+        
+        # Выбранные значения
+        context['selected_maintenance_type'] = self.request.GET.get('maintenance_type', '')
+        context['selected_organization'] = self.request.GET.get('organization', '')
+        context['selected_failure_node'] = self.request.GET.get('failure_node', '')
+        context['selected_repair_method'] = self.request.GET.get('repair_method', '')
         
         return context
-
 
 class MachineUpdateView(LoginRequiredMixin, ManagerRequiredMixin, UpdateView):
     model = Machine
@@ -281,4 +386,25 @@ def search_machine(request):
     return render(request, 'search_result.html', {
         'machine': machine,
         'error': error,
+    })
+
+def home(request):
+    # Если пользователь уже авторизован - перенаправляем на список машин
+    if request.user.is_authenticated:
+        return redirect('machine_list')
+    
+    factory_number = request.GET.get('factory_number')
+    machine = None
+    error = None
+    
+    if factory_number:
+        try:
+            machine = Machine.objects.get(factory_number=factory_number)
+        except Machine.DoesNotExist:
+            error = 'Данных о машине с таким заводским номером нет в системе'
+    
+    return render(request, 'home.html', {
+        'machine': machine,
+        'error': error,
+        'factory_number': factory_number
     })

@@ -1,13 +1,271 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="container">
-    <h1>Электронная сервисная книжка "Мой Силант"</h1>
-    <p>Проверьте комплектацию и технические характеристики техники Силант</p>
+<div class="home-page">
+    <!-- Блок с поиском -->
+    <div class="search-section">
+        <h1>Электронная сервисная книжка "Мой Силант"</h1>
+        <p class="subtitle">Проверьте комплектацию и технические характеристики техники Силант</p>
+        
+        <form method="get" action="{% url 'home' %}" class="search-form">
+            <div class="search-input-wrapper">
+                <input type="text" name="factory_number" placeholder="Заводской номер" value="{{ request.GET.factory_number|default:'' }}" required>
+                <button type="submit">Поиск</button>
+            </div>
+        </form>
+    </div>
 
-    <form method="get" action="{% url 'search_machine' %}">
-        <input type="text" name="factory_number" placeholder="Заводской номер" required>
-        <button type="submit">Поиск</button>
-    </form>
+    <!-- Блок с результатами поиска -->
+    {% if factory_number %}
+    <div class="result-section">
+        <h2>Результат поиска</h2>
+        <p class="result-subtitle">Информация о комплектации и технических характеристиках Вашей техники</p>
+        
+        {% if error %}
+            <div class="error-message">
+                <p>{{ error }}</p>
+            </div>
+        {% elif machine %}
+            <div class="result-table-wrapper">
+                <table class="result-table">
+                    <tbody>
+                        <tr>
+                            <th>Зав. № машины</th>
+                            <td>{{ machine.factory_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Модель техники</th>
+                            <td>{{ machine.technique_model.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Модель двигателя</th>
+                            <td>{{ machine.engine_model.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Зав. № двигателя</th>
+                            <td>{{ machine.engine_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Модель трансмиссии</th>
+                            <td>{{ machine.transmission_model.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Зав. № трансмиссии</th>
+                            <td>{{ machine.transmission_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Модель ведущего моста</th>
+                            <td>{{ machine.drive_axle_model.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Зав. № ведущего моста</th>
+                            <td>{{ machine.drive_axle_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Модель управляемого моста</th>
+                            <td>{{ machine.steer_axle_model.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Зав. № управляемого моста</th>
+                            <td>{{ machine.steer_axle_number }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
+
+<style>
+.home-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* Блок поиска */
+.search-section {
+    background: white;
+    border-radius: 16px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    margin-bottom: 40px;
+}
+
+.search-section h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.search-section .subtitle {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.search-input-wrapper {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.search-input-wrapper input {
+    flex: 1;
+    min-width: 250px;
+    padding: 14px 20px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.search-input-wrapper input:focus {
+    outline: none;
+    border-color: #163E6C;
+    box-shadow: 0 0 0 3px rgba(22, 62, 108, 0.1);
+}
+
+.search-input-wrapper input::placeholder {
+    color: #bbb;
+}
+
+.search-input-wrapper button {
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-input-wrapper button:hover {
+    background-color: #a0080d;
+    transform: translateY(-2px);
+}
+
+/* Блок результатов */
+.result-section {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.result-section h2 {
+    font-size: 22px;
+    color: #163E6C;
+    margin-bottom: 10px;
+}
+
+.result-section .result-subtitle {
+    color: #666;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.error-message {
+    background-color: #FEE2E2;
+    border-left: 4px solid #D20A11;
+    padding: 15px 20px;
+    border-radius: 10px;
+}
+
+.error-message p {
+    color: #D20A11;
+    margin: 0;
+    font-weight: 500;
+}
+
+.result-table-wrapper {
+    overflow-x: auto;
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.result-table tr {
+    border-bottom: 1px solid #eee;
+}
+
+.result-table tr:last-child {
+    border-bottom: none;
+}
+
+.result-table th {
+    background-color: #163E6C;
+    color: white;
+    padding: 12px 16px;
+    font-weight: 600;
+    width: 35%;
+    text-align: left;
+}
+
+.result-table td {
+    padding: 12px 16px;
+    color: #333;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .search-section {
+        padding: 25px;
+        margin: 0 15px 30px 15px;
+    }
+    
+    .result-section {
+        margin: 0 15px;
+        padding: 20px;
+    }
+    
+    .search-section h1 {
+        font-size: 22px;
+    }
+    
+    .result-section h2 {
+        font-size: 18px;
+    }
+    
+    .search-input-wrapper {
+        flex-direction: column;
+    }
+    
+    .search-input-wrapper input {
+        min-width: auto;
+    }
+    
+    .search-input-wrapper button {
+        width: 100%;
+    }
+    
+    .result-table th,
+    .result-table td {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-section h1 {
+        font-size: 20px;
+    }
+    
+    .result-table th,
+    .result-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+}
+</style>
 {% endblock %}

@@ -1,102 +1,250 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Техническое обслуживание (ТО)</h1>
+<div class="page-container">
+    <div class="page-header">
+        <h1>Техническое обслуживание (ТО)</h1>
+        <p class="section-title">Информация о проведённых ТО Вашей техники</p>
+    </div>
 
-<!-- ФИЛЬТРЫ -->
-<div style="background-color: #EBE6D6; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
-    <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
-        <div>
-            <label style="font-size: 12px;">Вид ТО:</label><br>
-            <select name="maintenance_type" style="padding: 5px; min-width: 150px;">
-                <option value="">Все</option>
-                {% for type in maintenance_types %}
-                <option value="{{ type.id }}">{{ type.name }}</option>
+    <!-- ФИЛЬТРЫ -->
+    <div class="filters-card">
+        <form method="get" class="filters-form">
+            <div class="filter-group">
+                <label>Вид ТО:</label>
+                <select name="maintenance_type">
+                    <option value="">Все</option>
+                    {% for type in maintenance_types %}
+                    <option value="{{ type.id }}" {% if selected_type|stringformat:"s" == type.id|stringformat:"s" %}selected{% endif %}>
+                        {{ type.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Зав. № машины:</label>
+                <input type="text" name="machine_number" value="{{ selected_machine_number }}" placeholder="Поиск по номеру">
+            </div>
+            <div class="filter-group">
+                <label>Сервисная компания:</label>
+                <select name="service_company">
+                    <option value="">Все</option>
+                    {% for company in service_companies %}
+                    <option value="{{ company.id }}" {% if selected_service|stringformat:"s" == company.id|stringformat:"s" %}selected{% endif %}>
+                        {{ company.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-buttons">
+                <button type="submit" class="btn-filter">Применить</button>
+                <a href="{% url 'maintenance_list' %}" class="btn-reset">Сбросить</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ТАБЛИЦА -->
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Машина (зав. №)</th>
+                    <th>Вид ТО</th>
+                    <th>Дата проведения</th>
+                    <th>Наработка, м/час</th>
+                    <th>№ заказ-наряда</th>
+                    <th>Дата заказ-наряда</th>
+                    <th>Организация</th>
+                    <th>Сервисная компания</th>
+                    {% if is_manager or is_service%}
+                    <th>Действия</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in maintenances %}
+                <tr onclick="location.href='/maintenance/{{ item.pk }}/'" style="cursor: pointer;">
+                    <td>{{ item.machine.factory_number }}</td>
+                    <td>{{ item.maintenance_type.name }}</td>
+                    <td>{{ item.maintenance_date|date:"d.m.Y" }}</td>
+                    <td>{{ item.operating_hours }}</td>
+                    <td>{{ item.work_order_number }}</td>
+                    <td>{{ item.work_order_date|date:"d.m.Y" }}</td>
+                    <td>{{ item.organization.name }}</td>
+                    <td>{{ item.service_company.name }}</td>
+                    {% if is_manager or is_service %}
+                    <td onclick="event.stopPropagation();">
+                        <a href="{% url 'maintenance_edit' item.pk %}" class="action-edit">✏️</a>
+                        {% if is_manager %}
+                        <a href="{% url 'maintenance_delete' item.pk %}" class="action-delete">🗑️</a>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="9" style="text-align: center;">Нет данных о ТО</td>
+                </tr>
                 {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label style="font-size: 12px;">Зав. № машины:</label><br>
-            
-            <input type="text" name="machine_number" value="{{ selected_machine_number }}" style="padding: 5px; width: 150px;">
-        </div>
-        <div>
-            <label style="font-size: 12px;">Сервисная компания:</label><br>
-            <select name="service_company" style="padding: 5px; min-width: 150px;">
-                <option value="">Все</option>
-                {% for company in service_companies %}
-                <option value="{{ company.id }}">{{ company.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none; border-radius: 3px;">Применить</button>
-            <a href="{% url 'maintenance_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none; border-radius: 3px;">Сброс</a>
-        </div>
-    </form>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<!-- ТАБЛИЦА -->
-<table class="data-table">
-    <thead>
-        <tr>
-            <th>Машина (зав. №)</th>
-            <th>Вид ТО</th>
-            <th>Дата проведения</th>
-            <th>Наработка, м/час</th>
-            <th>№ заказ-наряда</th>
-            <th>Дата заказ-наряда</th>
-            <th>Организация</th>
-            <th>Сервисная компания</th>
-            {% if is_manager or is_service %}
-            <th>Действия</th>
-            {% endif %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in maintenances %}
-        <tr onclick="location.href='/maintenance/{{ item.pk }}/'" style="cursor: pointer;">
-            <td>{{ item.machine.factory_number }}</td>
-            <td>{{ item.maintenance_type.name }}</td>
-            <td>{{ item.maintenance_date }}</td>
-            <td>{{ item.operating_hours }}</td>
-            <td>{{ item.work_order_number }}</td>
-            <td>{{ item.work_order_date }}</td>
-            <td>{{ item.organization.name }}</td>
-            <td>{{ item.service_company.name }}</td>
-            {% if is_manager or is_service %}
-            <td onclick="event.stopPropagation();" style="text-align: center;">
-                <a href="{% url 'maintenance_edit' item.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
-                {% if is_manager %}
-                <a href="{% url 'maintenance_delete' item.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить запись ТО?')">🗑️ Удалить</a>
-                {% endif %}
-            </td>
-            {% endif %}
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="9" style="text-align: center;">Нет данных о ТО</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
 <style>
+.page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 10px;
+}
+
+.page-header .section-title {
+    color: #666;
+    font-size: 16px;
+}
+
+.filters-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #163E6C;
+    text-transform: uppercase;
+}
+
+.filter-group select, .filter-group input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 150px;
+    background: white;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-filter {
+    background-color: #163E6C;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-reset {
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 14px;
 }
-.data-table th, .data-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
+
 .data-table th {
     background-color: #163E6C;
     color: white;
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
 }
+
+.data-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
 .data-table tr:hover {
     background-color: #EBE6D6;
+}
+
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+}
+
+.action-edit {
+    color: #163E6C;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+.action-delete {
+    color: #D20A11;
+    text-decoration: none;
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 22px;
+    }
+    
+    .filters-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group select, .filter-group input {
+        width: 100%;
+    }
+    
+    .filter-buttons {
+        justify-content: center;
+        margin-top: 10px;
+    }
+    
+    .data-table th, .data-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
 }
 </style>
 {% endblock %}

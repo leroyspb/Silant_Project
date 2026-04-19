@@ -1,201 +1,443 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Машина {{ machine.technique_model.name }}</h1>
+<div class="machine-detail-page">
+    <div class="breadcrumb">
+        <a href="{% url 'machine_list' %}">← Назад к списку машин</a>
+    </div>
 
-{% if is_manager %}
-<div style="margin-bottom: 20px;">
-    <a href="{% url 'machine_edit' machine.pk %}" class="btn" style="background-color: #163E6C; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; display: inline-block; margin-right: 10px;">✏️ Редактировать машину</a>
-    <a href="{% url 'machine_delete' machine.pk %}" class="btn" style="background-color: #D20A11; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; display: inline-block;" onclick="return confirm('Вы уверены, что хотите удалить эту машину?')">🗑️ Удалить машину</a>
-</div>
-{% endif %}
+    <div class="detail-header">
+        <h1>Машина {{ machine.factory_number }}</h1>
+        <p class="machine-model">{{ machine.technique_model.name }}</p>
+    </div>
 
-<div style="margin-bottom: 20px;">
-    {% if can_add_maintenance %}
-    <a href="{% url 'add_maintenance' machine.pk %}" class="btn" style="background-color: #163E6C; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; display: inline-block; margin-right: 10px;">+ Добавить ТО</a>
+    {% if is_manager %}
+    <div class="action-buttons">
+        <a href="{% url 'machine_edit' machine.pk %}" class="btn-edit">✏️ Редактировать машину</a>
+        <a href="{% url 'machine_delete' machine.pk %}" class="btn-delete" onclick="return confirm('Удалить машину?')">🗑️ Удалить машину</a>
+    </div>
     {% endif %}
-    {% if can_add_complaint %}
-    <a href="{% url 'add_complaint' machine.pk %}" class="btn" style="background-color: #D20A11; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; display: inline-block;">+ Добавить рекламацию</a>
-    {% endif %}
-</div>
 
-<!-- ВКЛАДКИ -->
-<div style="margin-bottom: 20px;">
-    <button onclick="showTab('info')" id="tabInfoBtn" style="background-color: #163E6C; color: white; padding: 10px 20px; border: none; cursor: pointer; border-radius: 4px 0 0 4px;">Общая информация</button>
-    <button onclick="showTab('to')" id="tabToBtn" style="background-color: #EBE6D6; color: #163E6C; padding: 10px 20px; border: none; cursor: pointer;">ТО</button>
-    <button onclick="showTab('claims')" id="tabClaimsBtn" style="background-color: #EBE6D6; color: #163E6C; padding: 10px 20px; border: none; cursor: pointer; border-radius: 0 4px 4px 0;">Рекламации</button>
-</div>
+    <div class="action-buttons">
+        {% if can_add_maintenance %}
+        <a href="{% url 'add_maintenance' machine.pk %}" class="btn-add-maintenance">+ Добавить ТО</a>
+        {% endif %}
+        {% if can_add_complaint %}
+        <a href="{% url 'add_complaint' machine.pk %}" class="btn-add-complaint">+ Добавить рекламацию</a>
+        {% endif %}
+    </div>
 
-<!-- ========== ВКЛАДКА 1: ОБЩАЯ ИНФОРМАЦИЯ ========== -->
-<div id="tabInfo" class="tab-content" style="display: block;">
-    <table class="data-table">
-        <tr><th>Зав. № машины</th><td>{{ machine.factory_number }}</td></tr>
-        <tr><th>Модель техники</th><td>{{ machine.technique_model.name }}</td></tr>
-        <tr><th>Описание модели техники</th><td>{{ machine.technique_model.description }}</td></tr>
-        <tr><th>Модель двигателя</th><td>{{ machine.engine_model.name }}</td></tr>
-        <tr><th>Описание двигателя</th><td>{{ machine.engine_model.description }}</td></tr>
-        <tr><th>Зав. № двигателя</th><td>{{ machine.engine_number }}</td></tr>
-        <tr><th>Модель трансмиссии</th><td>{{ machine.transmission_model.name }}</td></tr>
-        <tr><th>Описание трансмиссии</th><td>{{ machine.transmission_model.description }}</td></tr>
-        <tr><th>Зав. № трансмиссии</th><td>{{ machine.transmission_number }}</td></tr>
-        <tr><th>Модель ведущего моста</th><td>{{ machine.drive_axle_model.name }}</td></tr>
-        <tr><th>Описание ведущего моста</th><td>{{ machine.drive_axle_model.description }}</td></tr>
-        <tr><th>Зав. № ведущего моста</th><td>{{ machine.drive_axle_number }}</td></tr>
-        <tr><th>Модель управляемого моста</th><td>{{ machine.steer_axle_model.name }}</td></tr>
-        <tr><th>Описание управляемого моста</th><td>{{ machine.steer_axle_model.description }}</td></tr>
-        <tr><th>Зав. № управляемого моста</th><td>{{ machine.steer_axle_number }}</td></tr>
-        <tr><th>Договор поставки</th><td>{{ machine.supply_contract }}</td></tr>
-        <tr><th>Дата отгрузки с завода</th><td>{{ machine.shipping_date }}</td></tr>
-        <tr><th>Грузополучатель</th><td>{{ machine.consignee }}</td></tr>
-        <tr><th>Адрес поставки (эксплуатации)</th><td>{{ machine.delivery_address }}</td></tr>
-        <tr><th>Комплектация (доп. опции)</th><td>{{ machine.equipment }}</td></tr>
-        <tr><th>Клиент</th><td>{{ machine.client.username }}</td></tr>
-        <tr><th>Сервисная компания</th><td>{{ machine.service_company.name }}</td></tr>
-    </table>
-</div>
+    <!-- Вкладки -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="info">Машина</button>
+        <button class="tab-btn" data-tab="maintenances">ТО</button>
+        <button class="tab-btn" data-tab="complaints">Рекламации</button>
+    </div>
 
-<!-- ========== ВКЛАДКА 2: ТО ========== -->
-<div id="tabTo" class="tab-content" style="display: none;">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Вид ТО</th>
-                <th>Дата проведения ТО</th>
-                <th>Наработка, м/час</th>
-                <th>№ заказ-наряда</th>
-                <th>Дата заказ-наряда</th>
-                <th>Организация, проводившая ТО</th>
-                {% if is_client or is_manager or user.groups.first.name == 'Сервисная организация' %}
-                <th>Действия</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for to in maintenances %}
-            <tr>
-                <td>{{ to.maintenance_type.name }}</td>
-                <td>{{ to.maintenance_date }}</td>
-                <td>{{ to.operating_hours }}</td>
-                <td>{{ to.work_order_number }}</td>
-                <td>{{ to.work_order_date }}</td>
-                <td>{{ to.organization.name }}</td>
-                {% if is_client or is_manager or user.groups.first.name == 'Сервисная организация' %}
-                <td style="text-align: center;">
-                    <a href="{% url 'maintenance_edit' to.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
-                    {% if is_client or is_manager %}
-                    <a href="{% url 'maintenance_delete' to.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить запись ТО?')">🗑️ Удалить</a>
-                    {% endif %}
-                </td>
-                {% endif %}
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="{% if is_client or is_manager or user.groups.first.name == 'Сервисная организация' %}7{% else %}6{% endif %}" style="text-align: center;">Нет данных о ТО</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <!-- Вкладка 1: Общая информация -->
+    <div id="tab-info" class="tab-content active">
+        <div class="table-wrapper">
+            <table class="data-table">
+                <tbody>
+                    <tr><th>Зав. № машины</th><td>{{ machine.factory_number }}</td></tr>
+                    <tr><th>Модель техники</th><td>{{ machine.technique_model.name }} ({{ machine.technique_model.description }})</td></tr>
+                    <tr><th>Модель двигателя</th><td>{{ machine.engine_model.name }} ({{ machine.engine_model.description }})</td></tr>
+                    <tr><th>Зав. № двигателя</th><td>{{ machine.engine_number }}</td></tr>
+                    <tr><th>Модель трансмиссии</th><td>{{ machine.transmission_model.name }} ({{ machine.transmission_model.description }})</td></tr>
+                    <tr><th>Зав. № трансмиссии</th><td>{{ machine.transmission_number }}</td></tr>
+                    <tr><th>Модель ведущего моста</th><td>{{ machine.drive_axle_model.name }} ({{ machine.drive_axle_model.description }})</td></tr>
+                    <tr><th>Зав. № ведущего моста</th><td>{{ machine.drive_axle_number }}</td></tr>
+                    <tr><th>Модель управляемого моста</th><td>{{ machine.steer_axle_model.name }} ({{ machine.steer_axle_model.description }})</td></tr>
+                    <tr><th>Зав. № управляемого моста</th><td>{{ machine.steer_axle_number }}</td></tr>
+                    <tr><th>Договор поставки</th><td>{{ machine.supply_contract }}</td></tr>
+                    <tr><th>Дата отгрузки</th><td>{{ machine.shipping_date|date:"d E Y" }}</td></tr>
+                    <tr><th>Грузополучатель</th><td>{{ machine.consignee }}</td></tr>
+                    <tr><th>Адрес поставки</th><td>{{ machine.delivery_address }}</td></tr>
+                    <tr><th>Комплектация</th><td>{{ machine.equipment|default:"—" }}</td></tr>
+                    <tr><th>Клиент</th><td>{{ machine.client.username }}</td></tr>
+                    <tr><th>Сервисная компания</th><td>{{ machine.service_company.name }}</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-<!-- ========== ВКЛАДКА 3: РЕКЛАМАЦИИ ========== -->
-<div id="tabClaims" class="tab-content" style="display: none;">
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th>Дата отказа</th>
-                <th>Наработка, м/час</th>
-                <th>Узел отказа</th>
-                <th>Описание отказа</th>
-                <th>Способ восстановления</th>
-                <th>Используемые запчасти</th>
-                <th>Дата восстановления</th>
-                <th>Время простоя</th>
-                {% if is_manager or user.groups.first.name == 'Сервисная организация' %}
-                <th>Действия</th>
-                {% endif %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for claim in complaints %}
-            <tr>
-                <td>{{ claim.failure_date }}</td>
-                <td>{{ claim.operating_hours }}</td>
-                <td>{{ claim.failure_node }}</td>
-                <td>{{ claim.failure_description|truncatechars:50 }}</td>
-                <td>{{ claim.repair_method }}</td>
-                <td>{{ claim.used_parts|truncatechars:30 }}</td>
-                <td>{{ claim.recovery_date }}</td>
-                <td>{{ claim.downtime }}</td>
-                {% if is_manager or user.groups.first.name == 'Сервисная организация' %}
-                <td style="text-align: center;">
-                    <a href="{% url 'complaint_edit' claim.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
-                    {% if is_manager %}
-                    <a href="{% url 'complaint_delete' claim.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить рекламацию?')">🗑️ Удалить</a>
-                    {% endif %}
-                </td>
-                {% endif %}
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="{% if is_manager or user.groups.first.name == 'Сервисная организация' %}9{% else %}8{% endif %}" style="text-align: center;">Нет данных о рекламациях</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+    <!-- Вкладка 2: ТО (с фильтрами) -->
+    <div id="tab-maintenances" class="tab-content">
+        <!-- ФИЛЬТРЫ ДЛЯ ТО -->
+        <div class="filters-card">
+            <form method="get" action="{% url 'machine_detail' machine.pk %}" class="filters-form">
+                <input type="hidden" name="tab" value="maintenances">
+                <div class="filter-group">
+                    <label>Вид ТО:</label>
+                    <select name="maintenance_type">
+                        <option value="">Все</option>
+                        {% for type in maintenance_types %}
+                        <option value="{{ type.id }}" {% if selected_maintenance_type|stringformat:"s" == type.id|stringformat:"s" %}selected{% endif %}>
+                            {{ type.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Организация:</label>
+                    <select name="organization">
+                        <option value="">Все</option>
+                        {% for org in organizations %}
+                        <option value="{{ org.id }}" {% if selected_organization|stringformat:"s" == org.id|stringformat:"s" %}selected{% endif %}>
+                            {{ org.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-buttons">
+                    <button type="submit" class="btn-filter">Применить</button>
+                    <a href="{% url 'machine_detail' machine.pk %}?tab=maintenances" class="btn-reset">Сбросить</a>
+                </div>
+            </form>
+        </div>
 
-<a href="{% url 'machine_list' %}" class="btn" style="display: inline-block; margin-top: 20px; background-color: #163E6C; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px;">← Назад к списку</a>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Вид ТО</th>
+                        <th>Дата проведения</th>
+                        <th>Наработка, м/час</th>
+                        <th>№ заказ-наряда</th>
+                        <th>Дата заказ-наряда</th>
+                        <th>Организация</th>
+                        <th>Сервисная компания</th>
+                        {% if can_edit %}
+                        <th>Действия</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for to in filtered_maintenances %}
+                    <tr onclick="location.href='/maintenance/{{ to.pk }}/'" style="cursor: pointer;">
+                        <td>{{ to.maintenance_type.name }}</td>
+                        <td>{{ to.maintenance_date|date:"d.m.Y" }}</td>
+                        <td>{{ to.operating_hours }}</td>
+                        <td>{{ to.work_order_number }}</td>
+                        <td>{{ to.work_order_date|date:"d.m.Y" }}</td>
+                        <td>{{ to.organization.name }}</td>
+                        <td>{{ to.service_company.name }}</td>
+                        {% if can_edit %}
+                        <td onclick="event.stopPropagation();">
+                            <a href="{% url 'maintenance_edit' to.pk %}" class="action-edit">✏️</a>
+                            {% if is_manager %}
+                            <a href="{% url 'maintenance_delete' to.pk %}" class="action-delete">🗑️</a>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" style="text-align: center;">Нет данных о ТО</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Вкладка 3: Рекламации (с фильтрами) -->
+    <div id="tab-complaints" class="tab-content">
+        <!-- ФИЛЬТРЫ ДЛЯ РЕКЛАМАЦИЙ -->
+        <div class="filters-card">
+            <form method="get" action="{% url 'machine_detail' machine.pk %}" class="filters-form">
+                <input type="hidden" name="tab" value="complaints">
+                <div class="filter-group">
+                    <label>Узел отказа:</label>
+                    <select name="failure_node">
+                        <option value="">Все</option>
+                        {% for node in failure_nodes %}
+                        <option value="{{ node.id }}" {% if selected_failure_node|stringformat:"s" == node.id|stringformat:"s" %}selected{% endif %}>
+                            {{ node.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Способ восстановления:</label>
+                    <select name="repair_method">
+                        <option value="">Все</option>
+                        {% for method in repair_methods %}
+                        <option value="{{ method.id }}" {% if selected_repair_method|stringformat:"s" == method.id|stringformat:"s" %}selected{% endif %}>
+                            {{ method.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-buttons">
+                    <button type="submit" class="btn-filter">Применить</button>
+                    <a href="{% url 'machine_detail' machine.pk %}?tab=complaints" class="btn-reset">Сбросить</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Дата отказа</th>
+                        <th>Наработка</th>
+                        <th>Узел отказа</th>
+                        <th>Описание</th>
+                        <th>Способ восстановления</th>
+                        <th>Дата восстановления</th>
+                        <th>Время простоя</th>
+                        <th>Сервисная компания</th>
+                        {% if can_edit %}
+                        <th>Действия</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for claim in filtered_complaints %}
+                    <tr onclick="location.href='/complaint/{{ claim.pk }}/'" style="cursor: pointer;">
+                        <td>{{ claim.failure_date|date:"d.m.Y" }}</td>
+                        <td>{{ claim.operating_hours }}</td>
+                        <td>{{ claim.failure_node.name }}</td>
+                        <td>{{ claim.failure_description|truncatechars:50 }}</td>
+                        <td>{{ claim.repair_method.name }}</td>
+                        <td>{{ claim.recovery_date|date:"d.m.Y"|default:"—" }}</td>
+                        <td>{{ claim.downtime|default:"—" }}</td>
+                        <td>{{ claim.service_company.name }}</td>
+                        {% if can_edit %}
+                        <td onclick="event.stopPropagation();">
+                            <a href="{% url 'complaint_edit' claim.pk %}" class="action-edit">✏️</a>
+                            {% if is_manager %}
+                            <a href="{% url 'complaint_delete' claim.pk %}" class="action-delete">🗑️</a>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" style="text-align: center;">Нет данных о рекламациях</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 <style>
+
+.machine-detail-page {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.breadcrumb {
+    margin-bottom: 20px;
+}
+.breadcrumb a {
+    color: #163E6C;
+    text-decoration: none;
+    font-weight: 500;
+}
+.detail-header {
+    margin-bottom: 25px;
+}
+.detail-header h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 5px;
+}
+.detail-header .machine-model {
+    font-size: 18px;
+    color: #D20A11;
+    font-weight: 600;
+}
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+.btn-edit {
+    background-color: #163E6C;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+.btn-delete {
+    background-color: #D20A11;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+.btn-add-maintenance {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+.btn-add-complaint {
+    background-color: #ffc107;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+.tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #666;
+    border-radius: 8px 8px 0 0;
+}
+.tab-btn.active {
+    color: #163E6C;
+    border-bottom: 3px solid #D20A11;
+    background-color: #f5f5f0;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+.filters-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #163E6C;
+    text-transform: uppercase;
+}
+.filter-group select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 150px;
+    background: white;
+}
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+.btn-filter {
+    background-color: #163E6C;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.btn-reset {
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+.table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
 .data-table {
     width: 100%;
     border-collapse: collapse;
-}
-.data-table th, .data-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    vertical-align: top;
+    font-size: 14px;
 }
 .data-table th {
     background-color: #163E6C;
     color: white;
-    font-weight: 600;
+    padding: 12px 10px;
+    text-align: left;
+}
+.data-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
 }
 .data-table tr:hover {
     background-color: #EBE6D6;
 }
-.btn:hover {
-    opacity: 0.85;
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+}
+.action-edit {
+    color: #163E6C;
+    text-decoration: none;
+    margin-right: 10px;
+}
+.action-delete {
+    color: #D20A11;
+    text-decoration: none;
+}
+@media (max-width: 768px) {
+    .detail-header h1 { font-size: 22px; }
+    .filters-form { flex-direction: column; align-items: stretch; }
+    .filter-group select { width: 100%; }
+    .tab-btn { padding: 8px 16px; font-size: 14px; }
 }
 </style>
 
 <script>
-function showTab(tabName) {
-    document.getElementById('tabInfo').style.display = 'none';
-    document.getElementById('tabTo').style.display = 'none';
-    document.getElementById('tabClaims').style.display = 'none';
+    // Переключение вкладок с сохранением параметров
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabName = btn.getAttribute('data-tab');
+            
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            btn.classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            // Обновляем URL с параметром tab без перезагрузки
+            const url = new URL(window.location.href);
+            url.searchParams.set('tab', tabName);
+            window.history.pushState({}, '', url);
+        });
+    });
     
-    document.getElementById('tabInfoBtn').style.backgroundColor = '#EBE6D6';
-    document.getElementById('tabInfoBtn').style.color = '#163E6C';
-    document.getElementById('tabToBtn').style.backgroundColor = '#EBE6D6';
-    document.getElementById('tabToBtn').style.color = '#163E6C';
-    document.getElementById('tabClaimsBtn').style.backgroundColor = '#EBE6D6';
-    document.getElementById('tabClaimsBtn').style.color = '#163E6C';
-    
-    if (tabName === 'info') {
-        document.getElementById('tabInfo').style.display = 'block';
-        document.getElementById('tabInfoBtn').style.backgroundColor = '#163E6C';
-        document.getElementById('tabInfoBtn').style.color = 'white';
-    } else if (tabName === 'to') {
-        document.getElementById('tabTo').style.display = 'block';
-        document.getElementById('tabToBtn').style.backgroundColor = '#163E6C';
-        document.getElementById('tabToBtn').style.color = 'white';
-    } else if (tabName === 'claims') {
-        document.getElementById('tabClaims').style.display = 'block';
-        document.getElementById('tabClaimsBtn').style.backgroundColor = '#163E6C';
-        document.getElementById('tabClaimsBtn').style.color = 'white';
-    }
-}
+    // При загрузке страницы открываем нужную вкладку из URL
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab');
+        if (tabParam) {
+            const tabBtn = document.querySelector(`.tab-btn[data-tab="${tabParam}"]`);
+            if (tabBtn) {
+                tabBtn.click();
+            }
+        }
+    });
 </script>
 {% endblock %}

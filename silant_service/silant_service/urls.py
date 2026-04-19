@@ -3,7 +3,7 @@ from django.urls import path, include
 from django.views.generic import TemplateView
 from machines.views import (
     MachineListView, MachineDetailView, MachineUpdateView, MachineDeleteView, MachineCreateView,
-    search_machine
+    home
 )
 from maintenances.views import (
     MaintenanceListView, MaintenanceCreateView, 
@@ -17,7 +17,9 @@ from complaints.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    # Главная страница для неавторизованных (поиск)
+    path('', home, name='home'),
+    # Список машин для авторизованных
     path('machines/', MachineListView.as_view(), name='machine_list'),
     path('machine/<int:pk>/', MachineDetailView.as_view(), name='machine_detail'),
     path('machine/add/', MachineCreateView.as_view(), name='machine_add'),
@@ -33,5 +35,4 @@ urlpatterns = [
     path('complaint/<int:pk>/', ComplaintDetailView.as_view(), name='complaint_detail'),
     path('maintenances/', MaintenanceListView.as_view(), name='maintenance_list'),
     path('complaints/', ComplaintListView.as_view(), name='complaint_list'),
-    path('search/', search_machine, name='search_machine'),
 ]

@@ -1,114 +1,156 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-
-<h1>Редактирование технического обслуживания</h1>
-
-<form method="post">
-    {% csrf_token %}
-    
-    {% for field in form %}
-    <div class="form-group">
-        <label>{{ field.label }}</label>
-        {{ field }}
-        {% if field.help_text %}
-        <div class="help-text" style="margin-top: 5px;">
-            {{ field.help_text|safe }}
-        </div>
-        {% endif %}
-        {% if field.errors %}
-        <div class="errors" style="color: red;">
-            {{ field.errors }}
-        </div>
-        {% endif %}
+<div class="form-page">
+    <div class="breadcrumb">
+        <a href="javascript:history.back()">← Назад</a>
     </div>
-    {% endfor %}
-    
-    <button type="submit" class="btn" style="background-color: #163E6C; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Сохранить</button>
-    <a href="{% url 'machine_detail' machine.pk %}" class="btn" style="background-color: #D20A11; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Отмена</a>
-</form>
+
+    <div class="form-header">
+        <h1>{% if form.instance.pk %}Редактирование технического обслуживания{% else %}Добавление технического обслуживания{% endif %}</h1>
+        <p class="subtitle">Для машины {{ machine.factory_number }}</p>
+    </div>
+
+    <div class="form-card">
+        <form method="post" class="main-form">
+            {% csrf_token %}
+            
+            <div class="form-grid">
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                    <div class="help-text">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                    <div class="errors">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="form-buttons">
+                <button type="submit" class="btn-save">💾 Сохранить</button>
+                <a href="{% url 'machine_detail' machine.pk %}" class="btn-cancel">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
 
 <style>
-    .form-group {
-        margin-bottom: 15px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #163E6C;
-    }
-    select, input, textarea {
-        width: 100%;
-        max-width: 400px;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-    }
-    input[type="date"] {
-        width: auto;
-        min-width: 200px;
-    }
-    .error {
-        color: #D20A11;
-        font-size: 12px;
-        margin-top: 5px;
-    }
-    .form-buttons {
-        margin-top: 20px;
-    }
-    .btn-save {
-        background-color: #163E6C;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-right: 10px;
-    }
-    .btn-cancel {
-        background-color: #D20A11;
-        color: white;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 4px;
-        display: inline-block;
-    }
-    .btn-save:hover, .btn-cancel:hover {
-        opacity: 0.85;
-    }
-
-     .form-group {
-        margin-bottom: 15px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-    .form-group input, .form-group select, .form-group textarea {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-    }
-    .help-text {
-        font-size: 12px;
-        color: #666;
-        margin-top: 5px;
-    }
-    .btn-add {
-        display: inline-block;
-        padding: 3px 8px;
-        background-color: #28a745;
-        color: white;
-        text-decoration: none;
-        border-radius: 3px;
-        font-size: 12px;
-    }
-    .btn-add:hover {
-        background-color: #218838;
-    }
+/* Те же стили, что и в machine_form.html */
+.form-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.breadcrumb {
+    margin-bottom: 20px;
+}
+.breadcrumb a {
+    color: #163E6C;
+    text-decoration: none;
+    font-weight: 500;
+}
+.form-header {
+    margin-bottom: 25px;
+}
+.form-header h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 5px;
+}
+.form-header .subtitle {
+    color: #D20A11;
+    font-weight: 600;
+}
+.form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.form-group label {
+    font-weight: 600;
+    color: #163E6C;
+    font-size: 14px;
+}
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+}
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #163E6C;
+    box-shadow: 0 0 0 3px rgba(22, 62, 108, 0.1);
+}
+.help-text {
+    font-size: 12px;
+    color: #666;
+}
+.errors {
+    color: #D20A11;
+    font-size: 12px;
+    background-color: #FEE2E2;
+    padding: 8px;
+    border-radius: 6px;
+}
+.form-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    justify-content: flex-end;
+}
+.btn-save {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+.btn-save:hover {
+    background-color: #1e7e34;
+}
+.btn-cancel {
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+}
+.btn-cancel:hover {
+    background-color: #a0080d;
+}
+@media (max-width: 768px) {
+    .form-card { padding: 20px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-header h1 { font-size: 22px; }
+    .form-buttons { justify-content: center; flex-direction: column; }
+    .btn-save, .btn-cancel { text-align: center; }
+}
 </style>
 {% endblock %}

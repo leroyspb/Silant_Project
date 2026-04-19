@@ -1,108 +1,236 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<h1>Рекламации</h1>
+<div class="page-container">
+    <div class="page-header">
+        <h1>Рекламации</h1>
+        <p class="section-title">Информация о рекламациях Вашей техники</p>
+    </div>
 
-<!-- ФИЛЬТРЫ -->
-<div style="background-color: #EBE6D6; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
-    <form method="get" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end;">
-        <div>
-            <label style="font-size: 12px;">Узел отказа:</label><br>
-            <select name="failure_node" style="padding: 5px; min-width: 150px;">
-                <option value="">Все</option>
-                {% for node in failure_nodes %}
-                <option value="{{ node.id }}">{{ node.name }}</option>
+    <!-- ФИЛЬТРЫ -->
+    <div class="filters-card">
+        <form method="get" class="filters-form">
+            <div class="filter-group">
+                <label>Узел отказа:</label>
+                <select name="failure_node">
+                    <option value="">Все</option>
+                    {% for node in failure_nodes %}
+                    <option value="{{ node.id }}" {% if selected_failure_node|stringformat:"s" == node.id|stringformat:"s" %}selected{% endif %}>
+                        {{ node.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Способ восстановления:</label>
+                <select name="repair_method">
+                    <option value="">Все</option>
+                    {% for method in repair_methods %}
+                    <option value="{{ method.id }}" {% if selected_repair_method|stringformat:"s" == method.id|stringformat:"s" %}selected{% endif %}>
+                        {{ method.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Сервисная компания:</label>
+                <select name="service_company">
+                    <option value="">Все</option>
+                    {% for company in service_companies %}
+                    <option value="{{ company.id }}" {% if selected_service|stringformat:"s" == company.id|stringformat:"s" %}selected{% endif %}>
+                        {{ company.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-buttons">
+                <button type="submit" class="btn-filter">Применить</button>
+                <a href="{% url 'complaint_list' %}" class="btn-reset">Сбросить</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- ТАБЛИЦА -->
+    <div class="table-wrapper">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Машина</th>
+                    <th>Дата отказа</th>
+                    <th>Наработка</th>
+                    <th>Узел отказа</th>
+                    <th>Описание</th>
+                    <th>Способ восстановления</th>
+                    <th>Дата восстановления</th>
+                    <th>Время простоя</th>
+                    <th>Сервисная компания</th>
+                    {% if is_manager or is_service %}
+                    <th>Действия</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for claim in complaints %}
+                <tr onclick="location.href='/complaint/{{ claim.pk }}/'" style="cursor: pointer;">
+                    <td>{{ claim.machine.factory_number }}</td>
+                    <td>{{ claim.failure_date|date:"d.m.Y" }}</td>
+                    <td>{{ claim.operating_hours }}</td>
+                    <td>{{ claim.failure_node.name }}</td>
+                    <td>{{ claim.failure_description|truncatechars:50 }}</td>
+                    <td>{{ claim.repair_method.name }}</td>
+                    <td>{{ claim.recovery_date|date:"d.m.Y"|default:"—" }}</td>
+                    <td>{{ claim.downtime|default:"—" }}</td>
+                    <td>{{ claim.service_company.name }}</td>
+                    {% if is_manager or is_service %}
+                    <td onclick="event.stopPropagation();">
+                        <a href="{% url 'complaint_edit' claim.pk %}" class="action-edit">✏️</a>
+                        {% if is_manager %}
+                        <a href="{% url 'complaint_delete' claim.pk %}" class="action-delete">🗑️</a>
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="11" style="text-align: center;">Нет данных о рекламациях</td>
+                </tr>
                 {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label style="font-size: 12px;">Способ восстановления:</label><br>
-            <select name="repair_method" style="padding: 5px; min-width: 150px;">
-                <option value="">Все</option>
-                {% for method in repair_methods %}
-                <option value="{{ method.id }}">{{ method.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <label style="font-size: 12px;">Сервисная компания:</label><br>
-            <select name="service_company" style="padding: 5px; min-width: 150px;">
-                <option value="">Все</option>
-                {% for company in service_companies %}
-                <option value="{{ company.id }}">{{ company.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div>
-            <button type="submit" style="background-color: #163E6C; color: white; padding: 5px 15px; border: none; border-radius: 3px;">Применить</button>
-            <a href="{% url 'complaint_list' %}" style="background-color: #D20A11; color: white; padding: 5px 15px; text-decoration: none; border-radius: 3px;">Сброс</a>
-        </div>
-    </form>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<!-- ТАБЛИЦА -->
-<table class="data-table">
-    <thead>
-        <tr>
-            <th>Машина</th>
-            <th>Дата отказа</th>
-            <th>Наработка</th>
-            <th>Узел отказа</th>
-            <th>Описание</th>
-            <th>Способ восстановления</th>
-            <th>Дата восстановления</th>
-            <th>Время простоя</th>
-            <th>Сервисная компания</th>
-            {% if is_manager or is_service %}
-            <th>Действия</th>
-            {% endif %}
-        </tr>
-    </thead>
-    <tbody>
-        {% for claim in complaints %}
-        <tr onclick="location.href='/complaint/{{ claim.pk }}/'" style="cursor: pointer;">
-            <td>{{ claim.machine.factory_number }}</td>
-            <td>{{ claim.failure_date }}</td>
-            <td>{{ claim.operating_hours }}</td>
-            <td>{{ claim.failure_node.name }}</td>
-            <td>{{ claim.failure_description|truncatechars:50 }}</td>
-            <td>{{ claim.repair_method.name }}</td>
-            <td>{{ claim.recovery_date }}</td>
-            <td>{{ claim.downtime }}</td>
-            <td>{{ claim.service_company.name }}</td>
-            {% if is_manager or is_service %}
-            <td onclick="event.stopPropagation();" style="text-align: center;">
-                <a href="{% url 'complaint_edit' claim.pk %}" style="color: #163E6C; text-decoration: none; margin-right: 10px;">✏️ Ред.</a>
-                {% if is_manager %}
-                <a href="{% url 'complaint_delete' claim.pk %}" style="color: #D20A11; text-decoration: none;" onclick="return confirm('Удалить рекламацию?')">🗑️ Удалить</a>
-                {% endif %}
-            </td>
-            {% endif %}
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="10" style="text-align: center;">Нет данных о рекламациях</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
 <style>
+/* Стили такие же как в maintenance_list.html */
+.page-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.page-header {
+    margin-bottom: 25px;
+}
+.page-header h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 10px;
+}
+.page-header .section-title {
+    color: #666;
+    font-size: 16px;
+}
+.filters-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #163E6C;
+    text-transform: uppercase;
+}
+.filter-group select, .filter-group input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 150px;
+    background: white;
+}
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+.btn-filter {
+    background-color: #163E6C;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.btn-reset {
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+}
+.table-wrapper {
+    overflow-x: auto;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
 .data-table {
     width: 100%;
     border-collapse: collapse;
-}
-.data-table th, .data-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+    font-size: 14px;
 }
 .data-table th {
     background-color: #163E6C;
     color: white;
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.data-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: #333;
 }
 .data-table tr:hover {
     background-color: #EBE6D6;
+}
+.data-table th, .data-table td {
+    border: 1px solid #ddd;
+}
+.action-edit {
+    color: #163E6C;
+    text-decoration: none;
+    margin-right: 10px;
+}
+.action-delete {
+    color: #D20A11;
+    text-decoration: none;
+}
+@media (max-width: 768px) {
+    .page-header h1 {
+        font-size: 22px;
+    }
+    .filters-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .filter-group select, .filter-group input {
+        width: 100%;
+    }
+    .filter-buttons {
+        justify-content: center;
+        margin-top: 10px;
+    }
+    .data-table th, .data-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
 }
 </style>
 {% endblock %}

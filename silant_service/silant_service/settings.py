@@ -138,6 +138,8 @@ ACCOUNT_EMAIL_REQUIRED = False
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_AUTHENTICATION_METHOD = 'username'
 ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_ALLOW_SIGNUP = False
+ACCOUNT_ADAPTER = 'accounts.adapter.NoSignupAccountAdapter'
 
 # URL для входа/выхода
 LOGIN_URL = '/accounts/login/'

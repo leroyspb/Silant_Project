@@ -15,13 +15,14 @@ class ComplaintListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         user = self.request.user
+        company_name = user.company_name if hasattr(user, 'company_name') else None
         
         if user.is_superuser or user.groups.filter(name='Менеджер').exists():
             queryset = Complaint.objects.all()
         elif user.groups.filter(name='Клиент').exists():
             queryset = Complaint.objects.filter(machine__client=user)
         elif user.groups.filter(name='Сервисная организация').exists():
-            queryset = Complaint.objects.filter(service_company__name=user.company_name)
+            queryset = Complaint.objects.filter(machine__service_company__name=company_name)
         else:
             queryset = Complaint.objects.none()
         
@@ -39,6 +40,7 @@ class ComplaintListView(LoginRequiredMixin, ListView):
             queryset = queryset.filter(service_company_id=service_company)
         
         return queryset.order_by('-failure_date')
+
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -145,10 +147,12 @@ class ComplaintDetailView(LoginRequiredMixin, DetailView):
     
     def get_queryset(self):
         user = self.request.user
+        company_name = user.company_name if hasattr(user, 'company_name') else None
+        
         if user.is_superuser or user.groups.filter(name='Менеджер').exists():
             return Complaint.objects.all()
         elif user.groups.filter(name='Клиент').exists():
             return Complaint.objects.filter(machine__client=user)
         elif user.groups.filter(name='Сервисная организация').exists():
-            return Complaint.objects.filter(service_company__name=user.company_name)
+            return Complaint.objects.filter(machine__service_company__name=company_name)
         return Complaint.objects.none()

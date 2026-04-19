@@ -1,5 +1,6 @@
+from django.http import HttpResponseForbidden
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from .models import Maintenance
@@ -14,13 +15,15 @@ class MaintenanceListView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         user = self.request.user
+        company_name = user.company_name if hasattr(user, 'company_name') else None
         
         if user.is_superuser or user.groups.filter(name='Менеджер').exists():
             queryset = Maintenance.objects.all()
         elif user.groups.filter(name='Клиент').exists():
+            # Клиент видит ТО только своих машин
             queryset = Maintenance.objects.filter(machine__client=user)
         elif user.groups.filter(name='Сервисная организация').exists():
-            queryset = Maintenance.objects.filter(service_company__name=user.company_name)
+            queryset = Maintenance.objects.filter(machine__service_company__name=company_name)
         else:
             queryset = Maintenance.objects.none()
         
@@ -45,7 +48,6 @@ class MaintenanceListView(LoginRequiredMixin, ListView):
         
         context['maintenance_types'] = MaintenanceType.objects.all()
         context['service_companies'] = ServiceCompany.objects.all()
-        context['machines'] = Machine.objects.all()  # для фильтра по номеру
         
         context['selected_type'] = self.request.GET.get('maintenance_type', '')
         context['selected_machine_number'] = self.request.GET.get('machine_number', '')
@@ -53,11 +55,12 @@ class MaintenanceListView(LoginRequiredMixin, ListView):
         
         context['is_manager'] = user.is_superuser or user.groups.filter(name='Менеджер').exists()
         context['is_service'] = user.groups.filter(name='Сервисная организация').exists()
+        context['is_client'] = user.groups.filter(name='Клиент').exists()
         
         return context
 
 
-class MaintenanceCreateView(LoginRequiredMixin, CreateView):
+class MaintenanceCreateView(LoginRequiredMixin, CreateView):  # Убираем PermissionRequiredMixin
     model = Maintenance
     form_class = MaintenanceForm
     template_name = 'maintenances/maintenance_form.html'
@@ -72,36 +75,15 @@ class MaintenanceCreateView(LoginRequiredMixin, CreateView):
         elif user.groups.filter(name='Клиент').exists():
             # Клиент может добавлять ТО только для своих машин
             if machine.client != user:
-                from django.http import HttpResponseForbidden
                 return HttpResponseForbidden("У вас нет прав для добавления ТО к этой машине")
         elif user.groups.filter(name='Сервисная организация').exists():
             # Сервисная компания может добавлять ТО для своих машин
             if machine.service_company.name != user.company_name:
-                from django.http import HttpResponseForbidden
                 return HttpResponseForbidden("У вас нет прав для добавления ТО к этой машине")
         else:
-            from django.http import HttpResponseForbidden
             return HttpResponseForbidden("У вас нет прав для добавления ТО")
         
         return super().dispatch(request, *args, **kwargs)
-    
-    def form_valid(self, form):
-        machine = get_object_or_404(Machine, pk=self.kwargs['machine_pk'])
-        form.instance.machine = machine
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        return reverse_lazy('machine_detail', kwargs={'pk': self.kwargs['machine_pk']})
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['machine'] = get_object_or_404(Machine, pk=self.kwargs['machine_pk'])
-        return context
-    
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
     
     def form_valid(self, form):
         machine = get_object_or_404(Machine, pk=self.kwargs['machine_pk'])
@@ -130,6 +112,7 @@ class MaintenanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     def test_func(self):
         user = self.request.user
         maintenance = self.get_object()
+        company_name = user.company_name if hasattr(user, 'company_name') else None
         
         is_client = user.groups.filter(name='Клиент').exists()
         is_service = user.groups.filter(name='Сервисная организация').exists()
@@ -138,9 +121,10 @@ class MaintenanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         if is_manager:
             return True
         if is_client:
+            # Клиент может редактировать ТО только своих машин
             return maintenance.machine.client == user
         if is_service:
-            return maintenance.service_company.name == user.company_name
+            return maintenance.machine.service_company.name == company_name
         return False
     
     def get_success_url(self):
@@ -168,28 +152,18 @@ class MaintenanceUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         return initial
 
 
+
 class MaintenanceDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Maintenance
     template_name = 'maintenances/maintenance_confirm_delete.html'
     
     def test_func(self):
         user = self.request.user
-        maintenance = self.get_object()
-        
-        is_client = user.groups.filter(name='Клиент').exists()
-        is_service = user.groups.filter(name='Сервисная организация').exists()
-        is_manager = user.is_superuser or user.groups.filter(name='Менеджер').exists()
-        
-        if is_manager:
-            return True
-        if is_client:
-            return maintenance.machine.client == user
-        if is_service:
-            return maintenance.service_company.name == user.company_name
-        return False
+        # Только менеджер может удалять ТО
+        return user.is_superuser or user.groups.filter(name='Менеджер').exists()
     
     def get_success_url(self):
-        return reverse_lazy('machine_detail', kwargs={'pk': self.object.machine.pk})
+        return reverse_lazy('maintenance_list')
     
 class MaintenanceDetailView(LoginRequiredMixin, DetailView):
     model = Maintenance
@@ -198,10 +172,12 @@ class MaintenanceDetailView(LoginRequiredMixin, DetailView):
     
     def get_queryset(self):
         user = self.request.user
+        company_name = user.company_name if hasattr(user, 'company_name') else None
+        
         if user.is_superuser or user.groups.filter(name='Менеджер').exists():
             return Maintenance.objects.all()
         elif user.groups.filter(name='Клиент').exists():
             return Maintenance.objects.filter(machine__client=user)
         elif user.groups.filter(name='Сервисная организация').exists():
-            return Maintenance.objects.filter(service_company__name=user.company_name)
+            return Maintenance.objects.filter(machine__service_company__name=company_name)
         return Maintenance.objects.none()
