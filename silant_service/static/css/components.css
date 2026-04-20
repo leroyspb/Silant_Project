@@ -690,3 +690,69 @@
         text-align: center;
     }
 }
+
+.api-docs-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+.api-docs-container h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 10px;
+}
+.api-docs-container .subtitle {
+    color: #666;
+    margin-bottom: 30px;
+}
+.api-info, .api-endpoints, .api-example {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.api-info h2, .api-endpoints h2, .api-example h2 {
+    font-size: 20px;
+    color: #163E6C;
+    margin-bottom: 15px;
+}
+.endpoint-card {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+.endpoint-card h3 {
+    color: #D20A11;
+    margin-bottom: 10px;
+}
+.endpoint {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+.method {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+.method.GET {
+    background-color: #28a745;
+    color: white;
+}
+code {
+    background: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+}
+pre {
+    background: #2d2d2d;
+    color: #f8f8f2;
+    padding: 15px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 13px;
+}

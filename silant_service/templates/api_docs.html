@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="api-docs-container">
+    <h1>REST API Документация</h1>
+    <p class="subtitle">Электронная сервисная книжка "Мой Силант"</p>
+    
+    <div class="api-info">
+        <h2>Базовый URL</h2>
+        <code>http://127.0.0.1:8000/api/</code>
+    </div>
+    
+    <div class="api-endpoints">
+        <h2>Доступные endpoints</h2>
+        
+        <div class="endpoint-card">
+            <h3>📋 Машины</h3>
+            <div class="endpoint">
+                <span class="method GET">GET</span>
+                <code>/api/machines/</code>
+                <p>Получить список всех машин</p>
+            </div>
+            <div class="endpoint">
+                <span class="method GET">GET</span>
+                <code>/api/machines/{id}/</code>
+                <p>Получить детальную информацию о машине</p>
+            </div>
+        </div>
+        
+        <div class="endpoint-card">
+            <h3>🔧 Техническое обслуживание (ТО)</h3>
+            <div class="endpoint">
+                <span class="method GET">GET</span>
+                <code>/api/maintenances/</code>
+                <p>Получить список всех ТО</p>
+            </div>
+            <div class="endpoint">
+                <span class="method GET">GET</span>
+                <code>/api/maintenances/{id}/</code>
+                <p>Получить детальную информацию о ТО</p>
+            </div>
+        </div>
+        
+        <div class="endpoint-card">
+            <h3>⚠️ Рекламации</h3>
+            <div class="endpoint">
+                <span class="method GET">GET</span>
+                <code>/api/complaints/</code>
+                <p>Получить список всех рекламаций</p>
+            </div>
+            <div class="endpoint">
+                <span class="method GET">GET</span>
+                <code>/api/complaints/{id}/</code>
+                <p>Получить детальную информацию о рекламации</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="api-example">
+        <h2>Пример ответа</h2>
+        <pre>
+{
+    "id": 1,
+    "factory_number": "SN-001",
+    "technique_model": {
+        "id": 1,
+        "name": "Погрузчик Силант 200",
+        "description": "Вилочный погрузчик"
+    },
+    "engine_model": {
+        "id": 1,
+        "name": "Д-245",
+        "description": "Дизельный двигатель"
+    },
+    "shipping_date": "2024-01-15",
+    "client_name": "client1"
+}
+        </pre>
+    </div>
+</div>
+
+{% endblock %}
