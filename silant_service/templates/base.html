@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Мой Силант - Электронная сервисная книжка</title>
     {% load static %}
-    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Локальные шрифты PT Astra Sans -->
+    <link rel="preload" href="{% static 'fonts/PT-Astra-Sans_Regular.ttf' %}" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="{% static 'fonts/PT-Astra-Sans_Bold.ttf' %}" as="font" type="font/ttf" crossorigin>   
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
 </head>
@@ -13,7 +15,9 @@
     <header>
         <div class="container header-container">
             <div class="logo">
-                <img src="{% static 'images/logo.png' %}" alt="Силант" height="50">
+                <a href="{% url 'home' %}" class="logo-link">
+                    <img src="{% static 'images/logo.png' %}" alt="Силант" height="50">
+                </a>
             </div>
             {% if user.is_authenticated %}
             <div class="nav-links">

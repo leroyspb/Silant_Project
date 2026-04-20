@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from .models import Machine
+from .forms import MachineForm  # ДОБАВИТЬ ЭТУ СТРОКУ
 from maintenances.models import Maintenance
 from complaints.models import Complaint
 from maintenances.forms import MaintenanceForm
@@ -20,11 +21,16 @@ class ManagerRequiredMixin(UserPassesTestMixin):
 
 class MachineCreateView(LoginRequiredMixin, ManagerRequiredMixin, CreateView):
     model = Machine
-    fields = '__all__'
+    form_class = MachineForm  # используем форму вместо fields='__all__'
     template_name = 'machines/machine_form.html'
     
     def get_success_url(self):
         return reverse_lazy('machine_detail', kwargs={'pk': self.object.pk})
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 class MachineListView(LoginRequiredMixin, ListView):
     model = Machine
@@ -246,11 +252,16 @@ class MachineDetailView(LoginRequiredMixin, DetailView):
 
 class MachineUpdateView(LoginRequiredMixin, ManagerRequiredMixin, UpdateView):
     model = Machine
-    fields = '__all__'
+    form_class = MachineForm
     template_name = 'machines/machine_form.html'
     
     def get_success_url(self):
         return reverse_lazy('machine_detail', kwargs={'pk': self.object.pk})
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 class MachineDeleteView(LoginRequiredMixin, ManagerRequiredMixin, DeleteView):

@@ -17,6 +17,8 @@ from complaints.views import (
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
+    # Переопределяем страницу регистрации
+    path('accounts/signup/', TemplateView.as_view(template_name='account/signup_closed.html'), name='account_signup'),
     # Главная страница для неавторизованных (поиск)
     path('', home, name='home'),
     # Список машин для авторизованных

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="signup-closed-container">
+    <div class="signup-closed-card">
+        <div class="signup-closed-icon">
+            🔒
+        </div>
+        <div class="signup-closed-header">
+            <h1>Регистрация закрыта</h1>
+            <p>Самостоятельная регистрация в системе недоступна</p>
+        </div>
+        
+        <div class="signup-closed-message">
+            <p>Доступ к электронной сервисной книжке "Мой Силант"</p>
+            <p>предоставляется только администратором системы.</p>
+            <p>Для получения доступа обратитесь к ответственному лицу.</p>
+        </div>
+        
+        <div class="signup-closed-actions">
+            <a href="{% url 'account_login' %}" class="btn-login-page">Войти в систему</a>
+            <a href="{% url 'home' %}" class="btn-home-page">На главную</a>
+        </div>
+        
+        <div class="signup-closed-footer">
+            <p>Техническая поддержка: <a href="tel:+78352201209">+7-8352-20-12-09</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,10 +1,28 @@
-/* ========================================
-   СБРОС И ПЕРЕМЕННЫЕ
-   ======================================== */
+
+@font-face {
+    font-family: 'PT Astra Sans';
+    src: url('../fonts/PT-Astra-Sans_Regular.ttf') format('ttf'),
+         url('../fonts/PT-Astra-Sans_Bold.ttf') format('ttf');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'PT Astra Sans';
+    src: url('../fonts/PT-Astra-Sans_Regular.ttf') format('ttf'),
+         url('../fonts/PT-Astra-Sans_Bold.ttf') format('ttf');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'PT Astra Sans', 'PT Sans', sans-serif;
 }
 
 :root {
@@ -24,7 +42,6 @@
 }
 
 body {
-    font-family: 'PT Sans', 'PT Astra Sans', sans-serif;
     background-color: var(--bg-light);
     min-height: 100vh;
     display: flex;
@@ -88,7 +105,6 @@ footer {
     font-size: 16px;
 }
 
-/* Хлебные крошки */
 .breadcrumb {
     margin-bottom: 20px;
 }

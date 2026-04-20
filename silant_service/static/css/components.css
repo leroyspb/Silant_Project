@@ -559,3 +559,134 @@
 .btn-cancel:hover {
     background-color: #0f2e4d;
 }
+
+.signup-closed-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 40px 20px;
+}
+
+.signup-closed-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    padding: 40px;
+    text-align: center;
+}
+
+.signup-closed-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.signup-closed-header h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.signup-closed-header p {
+    color: #666;
+    font-size: 14px;
+}
+
+.signup-closed-message {
+    background-color: #EBE6D6;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 25px 0;
+}
+
+.signup-closed-message p {
+    color: #333;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.signup-closed-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+.btn-login-page {
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-login-page:hover {
+    background-color: #a0080d;
+    transform: translateY(-2px);
+}
+
+.btn-home-page {
+    background-color: #163E6C;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-home-page:hover {
+    background-color: #0f2e4d;
+    transform: translateY(-2px);
+}
+
+.signup-closed-footer {
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.signup-closed-footer p {
+    font-size: 13px;
+    color: #888;
+}
+
+.signup-closed-footer a {
+    color: #163E6C;
+    text-decoration: none;
+}
+
+.signup-closed-footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .signup-closed-card {
+        padding: 25px;
+    }
+    
+    .signup-closed-header h1 {
+        font-size: 22px;
+    }
+    
+    .signup-closed-actions {
+        flex-direction: column;
+    }
+    
+    .btn-login-page,
+    .btn-home-page {
+        width: 100%;
+        text-align: center;
+    }
+}
