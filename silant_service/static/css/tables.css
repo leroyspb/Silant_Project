@@ -1,0 +1,103 @@
+/* ========================================
+   ТАБЛИЦЫ
+   ======================================== */
+.table-wrapper {
+    overflow-x: auto;
+    background: var(--bg-white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    min-width: 600px;
+}
+
+.data-table th {
+    background-color: var(--primary);
+    color: var(--bg-white);
+    padding: 12px 10px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    color: var(--text-dark);
+}
+
+.data-table tr:hover {
+    background-color: var(--bg-light);
+    cursor: pointer;
+}
+
+.data-table th,
+.data-table td {
+    border: 1px solid var(--border);
+}
+
+/* Таблица результатов поиска */
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.result-table tr {
+    border-bottom: 1px solid #eee;
+}
+
+.result-table tr:last-child {
+    border-bottom: none;
+}
+
+.result-table th {
+    background-color: var(--primary);
+    color: var(--bg-white);
+    padding: 12px 16px;
+    font-weight: 600;
+    width: 35%;
+    text-align: left;
+}
+
+.result-table td {
+    padding: 12px 16px;
+    color: var(--text-dark);
+}
+
+/* Детальная таблица */
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-table th {
+    background-color: var(--primary);
+    color: var(--bg-white);
+    padding: 12px 15px;
+    width: 35%;
+    text-align: left;
+}
+
+.detail-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Действия в таблицах */
+.action-edit {
+    color: var(--primary);
+    text-decoration: none;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.action-delete {
+    color: var(--secondary);
+    text-decoration: none;
+    font-size: 16px;
+}

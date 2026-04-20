@@ -1,0 +1,561 @@
+/* ========================================
+   КОМПОНЕНТЫ (КНОПКИ, ФИЛЬТРЫ, ВКЛАДКИ)
+   ======================================== */
+
+/* Кнопки */
+.btn,
+.btn-filter,
+.btn-reset,
+.btn-add-machine,
+.btn-edit,
+.btn-delete,
+.btn-add-maintenance,
+.btn-add-complaint,
+.btn-save,
+.btn-cancel {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-filter {
+    background-color: var(--primary);
+    color: var(--bg-white);
+}
+
+.btn-reset {
+    background-color: var(--secondary);
+    color: var(--bg-white);
+}
+
+.btn-add-machine {
+    background-color: #28a745;
+    color: var(--bg-white);
+}
+
+.btn-edit {
+    background-color: var(--primary);
+    color: var(--bg-white);
+}
+
+.btn-delete {
+    background-color: var(--secondary);
+    color: var(--bg-white);
+}
+
+.btn-add-maintenance {
+    background-color: #28a745;
+    color: var(--bg-white);
+}
+
+.btn-add-complaint {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.btn-save {
+    background-color: #28a745;
+    color: var(--bg-white);
+}
+
+.btn-cancel {
+    background-color: var(--secondary);
+    color: var(--bg-white);
+}
+
+.btn-filter:hover,
+.btn-reset:hover,
+.btn-add-machine:hover,
+.btn-edit:hover,
+.btn-delete:hover,
+.btn-add-maintenance:hover,
+.btn-add-complaint:hover,
+.btn-save:hover,
+.btn-cancel:hover {
+    transform: translateY(-2px);
+}
+
+.btn-filter:hover {
+    background-color: var(--primary-dark);
+}
+
+.btn-reset:hover,
+.btn-cancel:hover {
+    background-color: var(--secondary-dark);
+}
+
+.btn-add-machine:hover,
+.btn-save:hover {
+    background-color: #1e7e34;
+}
+
+.btn-add-complaint:hover {
+    background-color: #e0a800;
+}
+
+/* Кнопки действий */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+/* Кнопка добавления машины */
+.add-button-container {
+    margin-bottom: 20px;
+    text-align: right;
+}
+
+/* Фильтры */
+.filters-card {
+    background: var(--bg-white);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: var(--shadow);
+}
+
+.filters-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.filter-group label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary);
+    text-transform: uppercase;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    min-width: 150px;
+    background: var(--bg-white);
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+/* Вкладки */
+.tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 12px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-gray);
+    transition: all 0.3s ease;
+    border-radius: 8px 8px 0 0;
+}
+
+.tab-btn.active {
+    color: var(--primary);
+    border-bottom: 3px solid var(--secondary);
+    background-color: #f5f5f0;
+}
+
+.tab-btn:hover:not(.active) {
+    color: var(--primary);
+    background-color: #f0f0e8;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Информационные карточки */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 20px;
+}
+
+.info-card {
+    background: var(--bg-white);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.info-card h3 {
+    font-size: 18px;
+    color: var(--primary);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--bg-light);
+}
+
+.info-table {
+    width: 100%;
+}
+
+.info-table tr {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-table th {
+    text-align: left;
+    font-weight: 600;
+    color: #555;
+    padding: 10px 0;
+    width: 40%;
+}
+
+.info-table td {
+    padding: 10px 0;
+    color: var(--text-dark);
+}
+
+/* Поиск на главной */
+.search-section {
+    background: var(--bg-white);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 40px;
+}
+
+.search-section h1 {
+    font-size: 28px;
+    color: var(--primary);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.search-section .subtitle {
+    font-size: 16px;
+    color: var(--text-gray);
+    margin-bottom: 30px;
+}
+
+.search-input-wrapper {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.search-input-wrapper input {
+    flex: 1;
+    min-width: 250px;
+    padding: 14px 20px;
+    border: 2px solid #e8e8e8;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.search-input-wrapper input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(22, 62, 108, 0.1);
+}
+
+.search-input-wrapper button {
+    background-color: var(--secondary);
+    color: var(--bg-white);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-input-wrapper button:hover {
+    background-color: var(--secondary-dark);
+    transform: translateY(-2px);
+}
+
+/* Результаты поиска */
+.result-section {
+    background: var(--bg-white);
+    border-radius: var(--radius);
+    padding: 30px;
+    box-shadow: var(--shadow);
+}
+
+.result-section h2 {
+    font-size: 22px;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.result-section .result-subtitle {
+    color: var(--text-gray);
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+.error-message {
+    background-color: #FEE2E2;
+    border-left: 4px solid var(--secondary);
+    padding: 15px 20px;
+    border-radius: 10px;
+}
+
+.error-message p {
+    color: var(--secondary);
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Детальная страница */
+.detail-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.detail-header {
+    margin-bottom: 25px;
+}
+
+.detail-header h1 {
+    font-size: 28px;
+    color: var(--primary);
+    margin-bottom: 5px;
+}
+
+.detail-header .subtitle {
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 40px 20px;
+}
+
+.login-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    width: 100%;
+    padding: 40px;
+    transition: transform 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.login-header p {
+    color: #666;
+    font-size: 14px;
+}
+
+.login-form .form-group {
+    margin-bottom: 20px;
+}
+
+.login-form label {
+    display: block;
+    font-weight: 600;
+    color: #163E6C;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.login-form input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.login-form input:focus {
+    outline: none;
+    border-color: #163E6C;
+    box-shadow: 0 0 0 3px rgba(22, 62, 108, 0.1);
+}
+
+.login-form input::placeholder {
+    color: #bbb;
+    font-size: 14px;
+}
+
+.form-errors {
+    background-color: #FEE2E2;
+    border-left: 4px solid #D20A11;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.form-errors p {
+    color: #D20A11;
+    font-size: 14px;
+    margin: 0;
+}
+
+.btn-login {
+    width: 100%;
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    background-color: #a0080d;
+    transform: translateY(-2px);
+}
+
+.login-footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.login-footer p {
+    font-size: 13px;
+    color: #888;
+    margin: 5px 0;
+}
+
+.login-footer a {
+    color: #163E6C;
+    text-decoration: none;
+}
+
+.login-footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 25px;
+    }
+    
+    .login-header h1 {
+        font-size: 24px;
+    }
+    
+    .btn-login {
+        padding: 12px 16px;
+    }
+}
+
+.logout-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    padding: 40px 20px;
+}
+
+.logout-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    max-width: 450px;
+    width: 100%;
+    padding: 40px;
+    text-align: center;
+}
+
+.logout-header h1 {
+    font-size: 28px;
+    color: #163E6C;
+    margin-bottom: 15px;
+}
+
+.logout-header p {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.btn-logout {
+    background-color: #D20A11;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 15px;
+}
+
+.btn-logout:hover {
+    background-color: #a0080d;
+}
+
+.btn-cancel {
+    background-color: #163E6C;
+    color: white;
+    text-decoration: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn-cancel:hover {
+    background-color: #0f2e4d;
+}

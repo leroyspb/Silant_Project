@@ -1,0 +1,135 @@
+/* ========================================
+   СБРОС И ПЕРЕМЕННЫЕ
+   ======================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #163E6C;
+    --primary-dark: #0f2e4d;
+    --secondary: #D20A11;
+    --secondary-dark: #a0080d;
+    --bg-light: #EBE6D6;
+    --bg-white: #FFFFFF;
+    --text-dark: #333333;
+    --text-gray: #666666;
+    --border: #DDDDDD;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --radius: 12px;
+    --radius-sm: 6px;
+}
+
+body {
+    font-family: 'PT Sans', 'PT Astra Sans', sans-serif;
+    background-color: var(--bg-light);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-dark);
+    line-height: 1.5;
+}
+
+/* Контейнеры */
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Main */
+main {
+    flex: 1;
+    padding: 40px 0;
+}
+
+/* Footer */
+footer {
+    background-color: var(--primary);
+    color: var(--bg-white);
+    padding: 20px 0;
+    margin-top: 40px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+/* Заголовки страниц */
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.page-header .user-role {
+    color: var(--secondary);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.page-header .section-title {
+    color: var(--text-gray);
+    font-size: 16px;
+}
+
+/* Хлебные крошки */
+.breadcrumb {
+    margin-bottom: 20px;
+}
+
+.breadcrumb a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+/* Ошибки */
+.errors {
+    color: var(--secondary);
+    font-size: 12px;
+    background-color: #FEE2E2;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    margin-top: 5px;
+}
+
+.help-text {
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-top: 5px;
+}
+
+/* Скролл */
+.table-wrapper::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 10px;
+}

@@ -1,0 +1,183 @@
+/* ========================================
+   АДАПТИВНЫЕ СТИЛИ (БЕЗ "ПЛЯСКИ")
+   ======================================== */
+
+/* 1366x768 */
+@media (max-width: 1366px) {
+    .container {
+        max-width: 1200px;
+    }
+}
+
+/* 1024x768 */
+@media (max-width: 1024px) {
+    .filters-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group select,
+    .filter-group input {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .filter-buttons {
+        justify-content: center;
+        margin-top: 10px;
+    }
+    
+    .tabs {
+        flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
+/* 768px (планшеты) */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .nav-links {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    main {
+        padding: 20px 0;
+    }
+    
+    .page-header h1 {
+        font-size: 24px;
+    }
+    
+    .search-section,
+    .filters-card,
+    .form-card {
+        padding: 25px;
+    }
+    
+    .search-input-wrapper {
+        flex-direction: column;
+    }
+    
+    .search-input-wrapper input {
+        min-width: auto;
+    }
+    
+    .search-input-wrapper button {
+        width: 100%;
+    }
+    
+    .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons a {
+        text-align: center;
+    }
+    
+    .form-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-save,
+    .btn-cancel {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .data-table {
+        font-size: 12px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 8px;
+    }
+}
+
+/* 480px (мобильные) */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 15px;
+    }
+    
+    .page-header h1 {
+        font-size: 20px;
+    }
+    
+    .search-section,
+    .filters-card,
+    .form-card {
+        padding: 15px;
+    }
+    
+    .tab-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .data-table th,
+    .data-table td {
+        padding: 6px;
+        font-size: 11px;
+    }
+    
+    .btn,
+    .btn-filter,
+    .btn-reset,
+    .btn-add-machine,
+    .btn-edit,
+    .btn-delete {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .filter-group select,
+    .filter-group input {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+    
+    .search-input-wrapper input {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .search-input-wrapper button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+    
+    .result-table th,
+    .result-table td {
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+    
+    .info-card h3 {
+        font-size: 16px;
+    }
+    
+    .info-table th,
+    .info-table td {
+        font-size: 13px;
+        padding: 8px 0;
+    }
+}
